@@ -1,0 +1,25 @@
+NIRA & CO Global source - deploy guide
+
+Recommended simple launch path:
+1. Put this whole nira-co-web-app folder into a GitHub repository.
+2. Create a Web Service on Render, Railway, Fly.io, or another Python host.
+3. Use:
+   Build command: pip install -r requirements.txt
+   Start command: HOST=0.0.0.0 python server.py
+4. Add your custom domain, for example app.niraandco.com.
+5. Make sure HTTPS is active.
+
+Mobile access:
+- iPhone: open the HTTPS website in Safari, tap Share, then Add to Home Screen.
+- Android: open the HTTPS website in Chrome, then install/add to home screen when prompted.
+
+App stores later:
+- Google Play: package the website as a Trusted Web Activity or convert to a native shell.
+- Apple App Store: use a native wrapper or rebuild the client in React Native/Swift.
+
+Production upgrades before real users:
+- Replace SQLite with hosted Postgres.
+- Add Google/Apple/Microsoft OAuth.
+- Add a licensed property-feed API.
+- Add password reset and email verification.
+- Add backups, monitoring, and terms/privacy pages.

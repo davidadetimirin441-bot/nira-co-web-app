@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">NIRA &amp; CO Global source logo</title>
+  <desc id="desc">A green circular globe mark with a house roof and the letter N.</desc>
+  <defs>
+    <linearGradient id="bg" x1="36" y1="28" x2="220" y2="230" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8fd6a8"/>
+      <stop offset="1" stop-color="#116447"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="64" y1="74" x2="196" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f5d889"/>
+      <stop offset="1" stop-color="#bf7c1f"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="#13221d"/>
+  <circle cx="128" cy="128" r="91" fill="url(#bg)"/>
+  <path d="M49 128c25-13 51-19 79-19s54 6 79 19" fill="none" stroke="#dff1e7" stroke-width="9" stroke-linecap="round"/>
+  <path d="M55 157c22 12 47 18 73 18s51-6 73-18" fill="none" stroke="#dff1e7" stroke-width="9" stroke-linecap="round" opacity=".85"/>
+  <path d="M128 38c-19 25-29 55-29 90s10 65 29 90c19-25 29-55 29-90s-10-65-29-90Z" fill="none" stroke="#dff1e7" stroke-width="9" opacity=".9"/>
+  <path d="M67 126 128 76l61 50" fill="none" stroke="#13221d" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M82 125v58h92v-58" fill="#13221d"/>
+  <path d="M92 181v-57h25l43 55v-55h25v87h-25l-43-55v55H92Z" fill="url(#gold)"/>
+</svg>
