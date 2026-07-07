@@ -15,8 +15,12 @@ What this version includes:
 - Session cookie login
 - User sourcer profiles
 - Deal API with real listing links and property photos
+- £15/month full-access subscription gate in prototype mode
+- Sourcer, technical team, and assistant chat in prototype mode
 
 For public launch:
 - Host it on HTTPS
 - Replace sample deal data with a licensed property-feed API
 - Connect Google/Apple/Microsoft OAuth credentials
+- Connect Stripe or another payment processor for real £15/month billing
+- Connect a production AI provider for live assistant responses
