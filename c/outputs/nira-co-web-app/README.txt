@@ -16,9 +16,11 @@ What this version includes:
 - User sourcer profiles
 - Deal API with real listing links and property photos
 - £15/month full-access subscription gate in prototype mode
+- Payment method capture for card, UK bank, and Airtim reference
 - Sourcer, technical team, and assistant chat in prototype mode
 - Forgot-password reset links stored in an email outbox table
 - Optional real reset-email sending with SMTP settings
+- Dedicated reset page at /reset?token=...
 
 For public launch:
 - Host it on HTTPS

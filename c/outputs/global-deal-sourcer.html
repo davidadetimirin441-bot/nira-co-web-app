@@ -1,0 +1,1522 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NIRA &amp; CO Global source</title>
+  <meta name="description" content="Find, qualify, and track investment houses across the UK and global markets.">
+  <meta name="theme-color" content="#116447">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="NIRA & CO">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <style>
+    :root {
+      --ink: #17211c;
+      --muted: #5e6b64;
+      --line: #d9dfd9;
+      --panel: #ffffff;
+      --page: #f5f7f2;
+      --green: #116447;
+      --green-2: #1d8360;
+      --amber: #bf7c1f;
+      --red: #ba4438;
+      --blue: #2d6f9f;
+      --shadow: 0 18px 42px rgba(23, 33, 28, .11);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--page);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 248px 1fr;
+    }
+
+    .sidebar {
+      background: #13221d;
+      color: #eef6ef;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: #13221d;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      background: transparent;
+      color: #c8d7ce;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      background: rgba(255,255,255,.09);
+      color: #fff;
+    }
+
+    .side-card {
+      margin-top: auto;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 8px;
+      background: rgba(255,255,255,.06);
+    }
+
+    .side-card strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .side-card p {
+      margin: 0;
+      color: #c8d7ce;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .topbar {
+      min-height: 76px;
+      padding: 16px 28px;
+      background: rgba(245, 247, 242, .92);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .title h1 {
+      font-size: 24px;
+      line-height: 1.1;
+      margin: 0 0 4px;
+      letter-spacing: 0;
+    }
+
+    .title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .icon-btn,
+    .primary-btn,
+    .ghost-btn {
+      min-height: 38px;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .icon-btn {
+      width: 38px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .primary-btn {
+      background: var(--green);
+      color: #fff;
+      padding: 0 14px;
+      font-weight: 700;
+    }
+
+    .ghost-btn {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 0 12px;
+    }
+
+    .content {
+      padding: 22px 28px 34px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 102px;
+      box-shadow: 0 8px 20px rgba(23,33,28,.05);
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat strong {
+      display: block;
+      margin: 8px 0 4px;
+      font-size: 27px;
+      line-height: 1;
+    }
+
+    .stat small {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) 360px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .tool-panel,
+    .list-panel,
+    .map-panel,
+    .profile-panel,
+    .pipeline-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .tool-panel {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(4, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      padding: 0 11px;
+      color: var(--ink);
+      width: 100%;
+    }
+
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .chip.active {
+      background: #dff1e7;
+      border-color: #a4d5ba;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .list-panel {
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel-head span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .deals {
+      display: grid;
+    }
+
+    .deal {
+      display: grid;
+      grid-template-columns: 96px 1fr auto;
+      gap: 14px;
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+    }
+
+    .deal:last-child { border-bottom: 0; }
+
+    .thumb {
+      height: 74px;
+      border-radius: 7px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(17,100,71,.18), rgba(45,111,159,.22)),
+        var(--image);
+      background-size: cover;
+      background-position: center;
+      border: 1px solid var(--line);
+    }
+
+    .deal h3 {
+      margin: 0 0 5px;
+      font-size: 15px;
+    }
+
+    .deal p {
+      margin: 0 0 9px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .deal-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .source-link {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 10px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .source-link:hover {
+      text-decoration: underline;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #eef2ef;
+      color: var(--muted);
+    }
+
+    .pill.good { color: var(--green); background: #dff1e7; }
+    .pill.warn { color: var(--amber); background: #f9ecd6; }
+    .pill.blue { color: var(--blue); background: #dcebf4; }
+
+    .deal-price {
+      text-align: right;
+      min-width: 120px;
+    }
+
+    .deal-price strong {
+      display: block;
+      font-size: 17px;
+    }
+
+    .deal-price small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .map-panel {
+      min-height: 260px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-art {
+      height: 192px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 23% 34%, #116447 0 5px, transparent 6px),
+        radial-gradient(circle at 46% 28%, #2d6f9f 0 6px, transparent 7px),
+        radial-gradient(circle at 57% 52%, #bf7c1f 0 5px, transparent 6px),
+        radial-gradient(circle at 76% 41%, #116447 0 6px, transparent 7px),
+        radial-gradient(circle at 66% 73%, #ba4438 0 5px, transparent 6px),
+        linear-gradient(150deg, #e9eee9, #f9faf7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-art:before {
+      content: "";
+      position: absolute;
+      inset: 18px 24px;
+      border: 2px solid rgba(45,111,159,.3);
+      border-left-color: transparent;
+      border-bottom-color: rgba(17,100,71,.28);
+      border-radius: 48% 52% 45% 55%;
+      transform: rotate(-8deg);
+    }
+
+    .map-panel h2,
+    .profile-panel h2,
+    .pipeline-panel h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    .profile-panel {
+      padding: 16px;
+    }
+
+    .profile-card-top {
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .profile-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #dff1e7;
+      color: var(--green);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .profile-card-top strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .profile-card-top span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .profile-metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfa;
+    }
+
+    .profile-metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .profile-metric strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+    }
+
+    .profile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .legend {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: var(--green);
+    }
+
+    .dot.blue { background: var(--blue); }
+    .dot.amber { background: var(--amber); }
+    .dot.red { background: var(--red); }
+
+    .pipeline-panel {
+      padding: 16px;
+    }
+
+    .stages {
+      display: grid;
+      gap: 10px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+    }
+
+    .stage strong {
+      font-size: 13px;
+    }
+
+    .stage span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .count {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--green);
+      font-weight: 800;
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      background: #13221d;
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: .22s ease;
+      pointer-events: none;
+      z-index: 10;
+      font-size: 13px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        linear-gradient(rgba(19, 34, 29, .72), rgba(19, 34, 29, .72)),
+        url("assets/manchester.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .login-screen[hidden] {
+      display: none;
+    }
+
+    .login-panel {
+      width: min(460px, 100%);
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .login-panel h2 {
+      margin: 14px 0 8px;
+      font-size: 24px;
+      line-height: 1.15;
+    }
+
+    .login-panel p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .provider-grid {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 16px 0;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f5f7f2;
+    }
+
+    .auth-tab {
+      min-height: 36px;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .auth-tab.active {
+      background: #fff;
+      color: var(--green);
+      box-shadow: 0 4px 12px rgba(23,33,28,.08);
+    }
+
+    .provider-btn {
+      min-height: 42px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 800;
+    }
+
+    .provider-btn:hover {
+      border-color: #a4d5ba;
+      background: #f7fbf8;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 12px 0;
+    }
+
+    .divider:before,
+    .divider:after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+    }
+
+    .login-form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .login-form[hidden] {
+      display: none;
+    }
+
+    .login-form input {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 0 12px;
+      width: 100%;
+    }
+
+    .login-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .account-chip {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      max-width: 230px;
+    }
+
+    .avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #dff1e7;
+      color: var(--green);
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .account-chip span:last-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1060px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .nav { grid-auto-flow: column; overflow-x: auto; }
+      .side-card { display: none; }
+      .workspace { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .content { padding: 16px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filters { grid-template-columns: 1fr; }
+      .deal {
+        grid-template-columns: 80px 1fr;
+      }
+      .deal-price {
+        grid-column: 1 / -1;
+        text-align: left;
+      }
+      .actions {
+        flex-wrap: wrap;
+      }
+      .account-chip {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="login-screen" id="loginScreen" aria-label="Sign in">
+    <div class="login-panel">
+      <div class="brand">
+        <div class="brand-mark"><img src="assets/nira-co-building-logo.png" alt=""></div>
+        <span>NIRA &amp; CO Global source</span>
+      </div>
+      <h2 id="authTitle">Sign in to source property deals</h2>
+      <p id="authCopy">Access your own workspace, saved leads, and sourcing pipeline.</p>
+      <div class="auth-tabs" role="tablist" aria-label="Account access">
+        <button class="auth-tab active" id="signInTab" type="button">Sign in</button>
+        <button class="auth-tab" id="signUpTab" type="button">Sign up</button>
+      </div>
+      <div class="provider-grid">
+        <button class="provider-btn" data-provider="Google" type="button">G Continue with Gmail</button>
+        <button class="provider-btn" data-provider="Apple" type="button">A Continue with Apple</button>
+        <button class="provider-btn" data-provider="Microsoft" type="button">M Continue with Microsoft</button>
+      </div>
+      <div class="divider">or use email</div>
+      <form class="login-form" id="loginForm">
+        <input id="loginEmail" autocomplete="email" placeholder="Email address" type="email" required>
+        <input id="loginPassword" autocomplete="current-password" placeholder="Password" type="password" required>
+        <button class="primary-btn" type="submit">Sign in</button>
+      </form>
+      <form class="login-form" id="signupForm" hidden>
+        <input id="signupName" autocomplete="name" placeholder="Full name" required>
+        <input id="signupEmail" autocomplete="email" placeholder="Email address" type="email" required>
+        <input id="signupPassword" autocomplete="new-password" placeholder="Create password" type="password" minlength="6" required>
+        <button class="primary-btn" type="submit">Create account</button>
+      </form>
+      <div class="login-note" id="authNote">Prototype mode stores accounts on this device. Live Gmail or Apple sign-in needs OAuth and a secure user database.</div>
+    </div>
+  </section>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><img src="assets/nira-co-building-logo.png" alt=""></div>
+        <span>NIRA &amp; CO Global source</span>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <button class="active" type="button">⌂ Dashboard</button>
+        <button type="button">⌕ Search</button>
+        <button type="button">◇ Leads</button>
+        <button type="button">◷ Pipeline</button>
+        <button type="button">⚙ Settings</button>
+      </nav>
+      <div class="side-card">
+        <strong>Investor brief</strong>
+        <p>Focus: below-market residential, mixed-use, and short-let-ready stock with clear exit routes.</p>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div class="title">
+          <h1>NIRA &amp; CO Global source</h1>
+          <p>Find, qualify, and track investment houses across the UK and international markets.</p>
+        </div>
+        <div class="actions">
+          <div class="account-chip" id="accountChip" hidden>
+            <span class="avatar" id="accountAvatar">R</span>
+            <span id="accountName">Guest</span>
+          </div>
+          <button class="icon-btn" title="Notifications" type="button">🔔</button>
+          <button class="ghost-btn install-btn" id="installBtn" type="button" hidden>Install app</button>
+          <button class="ghost-btn" id="exportBtn" type="button">Export</button>
+          <button class="ghost-btn" id="signOutBtn" type="button" hidden>Sign out</button>
+          <button class="primary-btn" id="leadBtn" type="button">Add lead</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <section class="stats" aria-label="Portfolio summary">
+          <div class="stat">
+            <span>Qualified deals</span>
+            <strong id="dealCount">0</strong>
+            <small>live opportunities</small>
+          </div>
+          <div class="stat">
+            <span>Average discount</span>
+            <strong id="profileDiscount">18%</strong>
+            <small>against local comparables</small>
+          </div>
+          <div class="stat">
+            <span>Projected yield</span>
+            <strong id="profileYield">7.9%</strong>
+            <small>blended gross yield</small>
+          </div>
+          <div class="stat">
+            <span>Markets watched</span>
+            <strong id="profileMarkets">42</strong>
+            <small>UK and global cities</small>
+          </div>
+        </section>
+
+        <section class="tool-panel" aria-label="Deal filters">
+          <div class="filters">
+            <div class="field">
+              <label for="search">Search location or keyword</label>
+              <input id="search" type="search" placeholder="Manchester, Dubai, Lagos, HMO">
+            </div>
+            <div class="field">
+              <label for="region">Region</label>
+              <select id="region">
+                <option value="All">All regions</option>
+                <option value="UK">United Kingdom</option>
+                <option value="Europe">Europe</option>
+                <option value="Middle East">Middle East</option>
+                <option value="Africa">Africa</option>
+                <option value="Americas">Americas</option>
+                <option value="Asia Pacific">Asia Pacific</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="strategy">Strategy</label>
+              <select id="strategy">
+                <option value="All">All strategies</option>
+                <option value="Buy-to-let">Buy-to-let</option>
+                <option value="Flip">Flip</option>
+                <option value="HMO">HMO</option>
+                <option value="Short let">Short let</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="budget">Max budget</label>
+              <select id="budget">
+                <option value="99999999">Any budget</option>
+                <option value="150000">Up to £150k</option>
+                <option value="300000">Up to £300k</option>
+                <option value="600000">Up to £600k</option>
+                <option value="1200000">Up to £1.2m</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="yield">Minimum yield</label>
+              <select id="yield">
+                <option value="0">Any yield</option>
+                <option value="6">6%+</option>
+                <option value="8">8%+</option>
+                <option value="10">10%+</option>
+              </select>
+            </div>
+          </div>
+          <div class="toggle-row" aria-label="Deal source filters">
+            <button class="chip active" data-source="All" type="button">All sources</button>
+            <button class="chip" data-source="Agent" type="button">Agent</button>
+            <button class="chip" data-source="Auction" type="button">Auction</button>
+            <button class="chip" data-source="Off-market" type="button">Off-market</button>
+            <button class="chip" data-source="Developer" type="button">Developer</button>
+          </div>
+        </section>
+
+        <section class="workspace">
+          <div class="list-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Matched deals</h2>
+                <span id="resultLabel">Fresh opportunities ranked by margin and confidence</span>
+              </div>
+              <button class="ghost-btn" id="sortBtn" type="button">Sort yield</button>
+            </div>
+            <div class="deals" id="deals"></div>
+          </div>
+
+          <aside class="side-stack">
+            <section class="profile-panel">
+              <h2>Sourcer profile</h2>
+              <div class="profile-card-top">
+                <div class="profile-avatar" id="profileAvatar">R</div>
+                <div>
+                  <strong id="profileName">Guest sourcer</strong>
+                  <span id="profileRole">Sign in to create your profile</span>
+                </div>
+              </div>
+              <div class="profile-grid">
+                <div class="profile-metric">
+                  <span>Assigned deals</span>
+                  <strong id="profileDeals">0</strong>
+                </div>
+                <div class="profile-metric">
+                  <span>Saved leads</span>
+                  <strong id="profileSaved">0</strong>
+                </div>
+                <div class="profile-metric">
+                  <span>Primary market</span>
+                  <strong id="profileMarket">UK</strong>
+                </div>
+                <div class="profile-metric">
+                  <span>Close rate</span>
+                  <strong id="profileClose">0%</strong>
+                </div>
+              </div>
+              <div class="profile-tags" id="profileTags"></div>
+            </section>
+
+            <section class="map-panel">
+              <h2>Market heat map</h2>
+              <div class="map-art" role="img" aria-label="Stylised world map with active deal markers"></div>
+              <div class="legend">
+                <span><i class="dot"></i>High margin</span>
+                <span><i class="dot blue"></i>Stable rent</span>
+                <span><i class="dot amber"></i>Needs diligence</span>
+                <span><i class="dot red"></i>Fast moving</span>
+              </div>
+            </section>
+
+            <section class="pipeline-panel">
+              <h2>Sourcing pipeline</h2>
+              <div class="stages">
+                <div class="stage"><div><strong>New leads</strong><br><span>Awaiting first call</span></div><div class="count">18</div></div>
+                <div class="stage"><div><strong>Comparable check</strong><br><span>Pricing and rent review</span></div><div class="count">9</div></div>
+                <div class="stage"><div><strong>Investor pack</strong><br><span>Numbers and exit plan</span></div><div class="count">6</div></div>
+                <div class="stage"><div><strong>Offer submitted</strong><br><span>Negotiation active</span></div><div class="count">4</div></div>
+              </div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">Done</div>
+
+  <script>
+    const deals = [
+      {
+        title: "Three-bed terrace near tram expansion",
+        location: "Manchester, UK",
+        region: "UK",
+        strategy: "Buy-to-let",
+        source: "Agent",
+        price: 185000,
+        yield: 7.6,
+        discount: 14,
+        status: "Mortgageable",
+        image: "url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=640&q=80')",
+        link: "https://www.zoopla.co.uk/for-sale/property/manchester/",
+        owner: "Aisha Bello"
+      },
+      {
+        title: "Auction semi with permitted development angle",
+        location: "Birmingham, UK",
+        region: "UK",
+        strategy: "Flip",
+        source: "Auction",
+        price: 142000,
+        yield: 9.1,
+        discount: 22,
+        status: "Refurb",
+        image: "url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=640&q=80')",
+        link: "https://www.zoopla.co.uk/for-sale/property/birmingham/",
+        owner: "Callum Price"
+      },
+      {
+        title: "Short-let apartment in marina district",
+        location: "Dubai, UAE",
+        region: "Middle East",
+        strategy: "Short let",
+        source: "Developer",
+        price: 315000,
+        yield: 8.8,
+        discount: 11,
+        status: "Ready Q4",
+        image: "url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=640&q=80')",
+        link: "https://www.propertyfinder.ae/en/search?c=1&l=50",
+        owner: "Maya Khan"
+      },
+      {
+        title: "Student HMO conversion candidate",
+        location: "Liverpool, UK",
+        region: "UK",
+        strategy: "HMO",
+        source: "Off-market",
+        price: 236000,
+        yield: 10.4,
+        discount: 19,
+        status: "Planning check",
+        image: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=640&q=80')",
+        link: "https://www.zoopla.co.uk/for-sale/property/liverpool/",
+        owner: "Aisha Bello"
+      },
+      {
+        title: "Two-unit villa close to new airport road",
+        location: "Lagos, Nigeria",
+        region: "Africa",
+        strategy: "Buy-to-let",
+        source: "Off-market",
+        price: 128000,
+        yield: 11.2,
+        discount: 27,
+        status: "Legal review",
+        image: "url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=640&q=80')",
+        link: "https://nigeriapropertycentre.com/for-sale/houses/lagos",
+        owner: "Tunde Okafor"
+      },
+      {
+        title: "Coastal townhouse with holiday-let demand",
+        location: "Algarve, Portugal",
+        region: "Europe",
+        strategy: "Short let",
+        source: "Agent",
+        price: 410000,
+        yield: 6.9,
+        discount: 9,
+        status: "Viewing slots",
+        image: "url('https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=640&q=80')",
+        link: "https://www.idealista.pt/en/comprar-casas/faro-distrito/algarve/",
+        owner: "Sofia Martins"
+      }
+    ];
+
+    const sourcerProfiles = [
+      { name: "Aisha Bello", market: "UK North", role: "Senior UK sourcer", closeRate: 31, saved: 14, markets: 12, tags: ["BTL", "HMO", "Off-market"] },
+      { name: "Callum Price", market: "Midlands", role: "Auction specialist", closeRate: 24, saved: 9, markets: 8, tags: ["Auction", "Flip", "Refurb"] },
+      { name: "Maya Khan", market: "Dubai", role: "GCC short-let sourcer", closeRate: 28, saved: 11, markets: 7, tags: ["Developer", "Short let", "Luxury"] },
+      { name: "Tunde Okafor", market: "Lagos", role: "Africa market sourcer", closeRate: 36, saved: 18, markets: 10, tags: ["Off-market", "Villas", "Legal review"] },
+      { name: "Sofia Martins", market: "Algarve", role: "Europe coastal sourcer", closeRate: 22, saved: 7, markets: 5, tags: ["Holiday let", "Coastal", "Yield"] }
+    ];
+
+    let selectedSource = "All";
+    let sortHighYield = false;
+    let installPrompt = null;
+    const userKey = "ratada-user-profile";
+    const accountsKey = "ratada-user-accounts";
+
+    const money = new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: "GBP",
+      maximumFractionDigits: 0
+    });
+
+    const els = {
+      search: document.querySelector("#search"),
+      region: document.querySelector("#region"),
+      strategy: document.querySelector("#strategy"),
+      budget: document.querySelector("#budget"),
+      yield: document.querySelector("#yield"),
+      deals: document.querySelector("#deals"),
+      dealCount: document.querySelector("#dealCount"),
+      resultLabel: document.querySelector("#resultLabel"),
+      toast: document.querySelector("#toast"),
+      sortBtn: document.querySelector("#sortBtn"),
+      authTitle: document.querySelector("#authTitle"),
+      authCopy: document.querySelector("#authCopy"),
+      signInTab: document.querySelector("#signInTab"),
+      signUpTab: document.querySelector("#signUpTab"),
+      loginScreen: document.querySelector("#loginScreen"),
+      loginForm: document.querySelector("#loginForm"),
+      loginEmail: document.querySelector("#loginEmail"),
+      loginPassword: document.querySelector("#loginPassword"),
+      signupForm: document.querySelector("#signupForm"),
+      signupName: document.querySelector("#signupName"),
+      signupEmail: document.querySelector("#signupEmail"),
+      signupPassword: document.querySelector("#signupPassword"),
+      accountChip: document.querySelector("#accountChip"),
+      accountAvatar: document.querySelector("#accountAvatar"),
+      accountName: document.querySelector("#accountName"),
+      signOutBtn: document.querySelector("#signOutBtn"),
+      profileAvatar: document.querySelector("#profileAvatar"),
+      profileName: document.querySelector("#profileName"),
+      profileRole: document.querySelector("#profileRole"),
+      profileDeals: document.querySelector("#profileDeals"),
+      profileSaved: document.querySelector("#profileSaved"),
+      profileMarket: document.querySelector("#profileMarket"),
+      profileClose: document.querySelector("#profileClose"),
+      profileTags: document.querySelector("#profileTags"),
+      profileDiscount: document.querySelector("#profileDiscount"),
+      profileYield: document.querySelector("#profileYield"),
+      profileMarkets: document.querySelector("#profileMarkets")
+    };
+
+    let authMode = "signin";
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => els.toast.classList.remove("show"), 1900);
+    }
+
+    function loadAccounts() {
+      try {
+        return JSON.parse(localStorage.getItem(accountsKey)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveAccounts(accounts) {
+      localStorage.setItem(accountsKey, JSON.stringify(accounts));
+    }
+
+    function findAccount(email) {
+      return loadAccounts().find((account) => account.email.toLowerCase() === email.toLowerCase());
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const isSignup = mode === "signup";
+      els.signInTab.classList.toggle("active", !isSignup);
+      els.signUpTab.classList.toggle("active", isSignup);
+      els.loginForm.hidden = isSignup;
+      els.signupForm.hidden = !isSignup;
+      els.authTitle.textContent = isSignup ? "Create your deal-sourcer account" : "Sign in to source property deals";
+      els.authCopy.textContent = isSignup
+        ? "Set up a sourcer profile before entering the dashboard."
+        : "Access your own workspace, saved leads, and sourcing pipeline.";
+    }
+
+    function createAccount({ name, email, password, provider }) {
+      const accounts = loadAccounts();
+      const existing = accounts.find((account) => account.email.toLowerCase() === email.toLowerCase());
+      if (existing) return existing;
+
+      const account = {
+        provider,
+        name,
+        email,
+        password,
+        createdAt: new Date().toISOString()
+      };
+      accounts.push(account);
+      saveAccounts(accounts);
+      return account;
+    }
+
+    function initialsFor(profile) {
+      const label = profile.name || profile.email || "R";
+      return label
+        .split(/[\s@.]+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0].toUpperCase())
+        .join("") || "R";
+    }
+
+    function profileFor(profile) {
+      const label = (profile.email || profile.name || "ratada").toLowerCase();
+      const index = [...label].reduce((sum, char) => sum + char.charCodeAt(0), 0) % sourcerProfiles.length;
+      const base = sourcerProfiles[index];
+      return {
+        ...base,
+        name: profile.name || base.name,
+        email: profile.email,
+        provider: profile.provider
+      };
+    }
+
+    function activeProfile() {
+      const saved = localStorage.getItem(userKey);
+      if (!saved) return sourcerProfiles[0];
+      try {
+        return profileFor(JSON.parse(saved));
+      } catch {
+        return sourcerProfiles[0];
+      }
+    }
+
+    function renderProfile(profile) {
+      const assigned = deals.filter((deal) => deal.owner === profile.name);
+      const profileDeals = assigned.length ? assigned : deals.filter((deal) => deal.region === "UK").slice(0, 2);
+      const averageYield = profileDeals.reduce((sum, deal) => sum + deal.yield, 0) / profileDeals.length;
+      const averageDiscount = profileDeals.reduce((sum, deal) => sum + deal.discount, 0) / profileDeals.length;
+
+      els.profileAvatar.textContent = initialsFor(profile);
+      els.profileName.textContent = profile.name;
+      els.profileRole.textContent = `${profile.role} · ${profile.provider || "Team profile"}`;
+      els.profileDeals.textContent = profileDeals.length;
+      els.profileSaved.textContent = profile.saved;
+      els.profileMarket.textContent = profile.market;
+      els.profileClose.textContent = `${profile.closeRate}%`;
+      els.profileTags.innerHTML = profile.tags.map((tag) => `<span class="pill good">${tag}</span>`).join("");
+      els.profileYield.textContent = `${averageYield.toFixed(1)}%`;
+      els.profileDiscount.textContent = `${Math.round(averageDiscount)}%`;
+      els.profileMarkets.textContent = profile.markets;
+    }
+
+    function applyUser(profile) {
+      localStorage.setItem(userKey, JSON.stringify(profile));
+      els.loginScreen.hidden = true;
+      els.accountChip.hidden = false;
+      els.signOutBtn.hidden = false;
+      els.accountAvatar.textContent = initialsFor(profile);
+      els.accountName.textContent = profile.name || profile.email;
+      renderProfile(profileFor(profile));
+      render();
+      showToast(`Signed in with ${profile.provider}`);
+    }
+
+    function restoreUser() {
+      const saved = localStorage.getItem(userKey);
+      if (!saved) return;
+      try {
+        const profile = JSON.parse(saved);
+        els.loginScreen.hidden = true;
+        els.accountChip.hidden = false;
+        els.signOutBtn.hidden = false;
+        els.accountAvatar.textContent = initialsFor(profile);
+        els.accountName.textContent = profile.name || profile.email;
+        renderProfile(profileFor(profile));
+      } catch {
+        localStorage.removeItem(userKey);
+      }
+    }
+
+    function signOut() {
+      localStorage.removeItem(userKey);
+      els.accountChip.hidden = true;
+      els.signOutBtn.hidden = true;
+      els.loginScreen.hidden = false;
+      els.loginForm.reset();
+      els.signupForm.reset();
+      setAuthMode("signin");
+      renderProfile(sourcerProfiles[0]);
+      render();
+      showToast("Signed out");
+    }
+
+    function filteredDeals() {
+      const q = els.search.value.trim().toLowerCase();
+      const region = els.region.value;
+      const strategy = els.strategy.value;
+      const budget = Number(els.budget.value);
+      const minYield = Number(els.yield.value);
+
+      const result = deals.filter((deal) => {
+        const haystack = `${deal.title} ${deal.location} ${deal.strategy} ${deal.source}`.toLowerCase();
+        return (!q || haystack.includes(q))
+          && (region === "All" || deal.region === region)
+          && (strategy === "All" || deal.strategy === strategy)
+          && (selectedSource === "All" || deal.source === selectedSource)
+          && deal.price <= budget
+          && deal.yield >= minYield;
+      });
+
+      return sortHighYield ? result.sort((a, b) => b.yield - a.yield) : result;
+    }
+
+    function render() {
+      const visible = filteredDeals();
+      const profile = activeProfile();
+      els.dealCount.textContent = visible.length;
+      els.resultLabel.textContent = visible.length
+        ? `${visible.length} opportunities match ${profile.name}'s sourcing brief`
+        : "No matches yet. Widen the filters to find more stock.";
+
+      els.deals.innerHTML = visible.map((deal) => `
+        <article class="deal">
+          <div class="thumb" style="--image:${deal.image}"></div>
+          <div>
+            <h3>${deal.title}</h3>
+            <p>${deal.location} · ${deal.source} · ${deal.strategy} · Owner: ${deal.owner}</p>
+            <div class="deal-meta">
+              <span class="pill good">${deal.yield.toFixed(1)}% yield</span>
+              <span class="pill blue">${deal.discount}% discount</span>
+              <span class="pill warn">${deal.status}</span>
+            </div>
+            <a class="source-link" href="${deal.link}" target="_blank" rel="noopener">View listings</a>
+          </div>
+          <div class="deal-price">
+            <strong>${money.format(deal.price)}</strong>
+            <small>guide price</small>
+          </div>
+        </article>
+      `).join("") || `
+        <article class="deal">
+          <div class="thumb"></div>
+          <div>
+            <h3>No deals found</h3>
+            <p>Try a lower yield threshold, wider region, or larger budget.</p>
+            <div class="deal-meta"><span class="pill">Adjust filters</span></div>
+          </div>
+          <div class="deal-price"><strong>-</strong><small>no result</small></div>
+        </article>
+      `;
+    }
+
+    document.querySelectorAll(".tool-panel input, .tool-panel select").forEach((control) => control.addEventListener("input", render));
+
+    document.querySelectorAll(".chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".chip").forEach((item) => item.classList.remove("active"));
+        chip.classList.add("active");
+        selectedSource = chip.dataset.source;
+        render();
+      });
+    });
+
+    els.sortBtn.addEventListener("click", () => {
+      sortHighYield = !sortHighYield;
+      els.sortBtn.textContent = sortHighYield ? "Sort default" : "Sort yield";
+      render();
+    });
+
+    document.querySelector("#leadBtn").addEventListener("click", () => showToast("Lead form ready for CRM connection"));
+    document.querySelector("#exportBtn").addEventListener("click", () => showToast("Investor shortlist exported"));
+    els.signOutBtn.addEventListener("click", signOut);
+    els.signInTab.addEventListener("click", () => setAuthMode("signin"));
+    els.signUpTab.addEventListener("click", () => setAuthMode("signup"));
+
+    els.loginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const email = els.loginEmail.value.trim();
+      const password = els.loginPassword.value;
+      const account = findAccount(email);
+      if (!account) {
+        showToast("No account found. Choose Sign up first.");
+        setAuthMode("signup");
+        els.signupEmail.value = email;
+        return;
+      }
+      if (account.password !== password) {
+        showToast("Password does not match this account");
+        return;
+      }
+      applyUser({
+        provider: account.provider || "Email",
+        name: account.name,
+        email: account.email,
+        signedInAt: new Date().toISOString()
+      });
+    });
+
+    els.signupForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = els.signupName.value.trim();
+      const email = els.signupEmail.value.trim();
+      const password = els.signupPassword.value;
+      if (findAccount(email)) {
+        showToast("Account already exists. Sign in instead.");
+        setAuthMode("signin");
+        els.loginEmail.value = email;
+        return;
+      }
+      if (password.length < 6) {
+        showToast("Use at least 6 characters");
+        return;
+      }
+      const account = createAccount({ name, email, password, provider: "Email" });
+      applyUser({
+        provider: account.provider,
+        name: account.name,
+        email: account.email,
+        signedInAt: new Date().toISOString()
+      });
+    });
+
+    document.querySelectorAll(".provider-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const provider = button.dataset.provider;
+        const emailDomain = provider === "Google" ? "gmail.com" : provider.toLowerCase() + ".account";
+        const email = `user@${emailDomain}`;
+        const account = createAccount({
+          provider,
+          name: `${provider} user`,
+          email,
+          password: `${provider.toLowerCase()}-oauth`
+        });
+        applyUser({
+          provider: account.provider,
+          name: account.name,
+          email: account.email,
+          signedInAt: new Date().toISOString()
+        });
+      });
+    });
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      installPrompt = event;
+      document.querySelector("#installBtn").hidden = false;
+    });
+
+    document.querySelector("#installBtn").addEventListener("click", async () => {
+      if (!installPrompt) {
+        showToast("On iPhone, use Share then Add to Home Screen");
+        return;
+      }
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+      installPrompt = null;
+      document.querySelector("#installBtn").hidden = true;
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js")
+          .catch(() => showToast("Offline mode will start after publishing"));
+      });
+    }
+
+    setAuthMode("signin");
+    renderProfile(activeProfile());
+    restoreUser();
+    render();
+  </script>
+</body>
+</html>

@@ -22,8 +22,10 @@ Production upgrades before real users:
 - Add Google/Apple/Microsoft OAuth.
 - Add a licensed property-feed API.
 - Connect Stripe or another payment processor for real £15/month billing.
+- Connect Airtim and UK bank/Open Banking providers before accepting real payments.
 - Connect a production AI provider for live assistant responses.
 - Connect SMTP, SendGrid, Mailgun, Postmark, or another email service for real reset-email delivery.
+- Password reset links open the dedicated /reset?token=... page.
 
 SMTP variables for password reset emails:
 - SMTP_HOST

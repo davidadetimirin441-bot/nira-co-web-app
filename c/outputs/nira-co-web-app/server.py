@@ -91,12 +91,31 @@ def init_db():
             body TEXT NOT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
+        CREATE TABLE IF NOT EXISTS payments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            plan_name TEXT NOT NULL,
+            amount INTEGER NOT NULL,
+            currency TEXT NOT NULL,
+            billing_name TEXT NOT NULL,
+            billing_email TEXT NOT NULL,
+            card_last4 TEXT NOT NULL,
+            method TEXT DEFAULT 'card',
+            reference TEXT DEFAULT '',
+            status TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
         """)
         columns = [row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()]
         if "subscribed" not in columns:
             conn.execute("ALTER TABLE users ADD COLUMN subscribed INTEGER DEFAULT 0")
         if "subscription_price" not in columns:
             conn.execute("ALTER TABLE users ADD COLUMN subscription_price INTEGER DEFAULT 15")
+        payment_columns = [row["name"] for row in conn.execute("PRAGMA table_info(payments)").fetchall()]
+        if "method" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN method TEXT DEFAULT 'card'")
+        if "reference" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN reference TEXT DEFAULT ''")
 
 
 def password_hash(password, salt=None):
@@ -147,10 +166,12 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_file(ROOT / "index.html", "text/html")
         if path == "/app":
             return self.send_file(ROOT / "app.html", "text/html")
+        if path == "/reset":
+            return self.send_file(ROOT / "reset.html", "text/html")
         if path == "/api/session":
             return self.send_json({"user": self.current_user()})
         if path == "/api/deals":
-            return self.send_json({"deals": DEALS, "sourcers": SOURCERS})
+            return self.deals_response()
         if path == "/api/chat":
             return self.send_json({"messages": CHAT_MESSAGES})
         if path.startswith("/assets/"):
@@ -174,7 +195,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/password-reset/confirm":
             return self.confirm_password_reset(data)
         if path == "/api/subscribe":
-            return self.subscribe()
+            return self.subscribe(data)
         if path == "/api/chat":
             return self.chat(data)
         self.send_error(HTTPStatus.NOT_FOUND)
@@ -213,7 +234,7 @@ class Handler(BaseHTTPRequestHandler):
                 token = secrets.token_urlsafe(32)
                 conn.execute("INSERT INTO password_resets (token, user_id) VALUES (?, ?)", (token, user["id"]))
                 host = self.headers.get("Host", f"{HOST}:{PORT}")
-                reset_link = f"http://{host}/app?reset={token}"
+                reset_link = f"http://{host}/reset?token={token}"
                 conn.execute(
                     "INSERT INTO email_outbox (recipient, subject, body) VALUES (?, ?, ?)",
                     (email, "Reset your NIRA & CO password", f"Open this link to reset your password: {reset_link}"),
@@ -253,14 +274,39 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b'{"ok": true}')
 
-    def subscribe(self):
+    def subscribe(self, data):
         user = self.current_user_row()
         if not user:
             return self.send_json({"error": "Sign in before subscribing."}, HTTPStatus.UNAUTHORIZED)
+        method = (data.get("method") or "").strip()
+        payer_name = (data.get("payerName") or "").strip()
+        payer_email = (data.get("payerEmail") or "").strip().lower()
+        reference = (data.get("reference") or "").strip()
+        if method not in {"card", "uk_bank", "airtim"}:
+            return self.send_json({"error": "Choose card, UK bank, or Airtim payment."}, HTTPStatus.BAD_REQUEST)
+        if not payer_name or "@" not in payer_email:
+            return self.send_json({"error": "Enter payer name and payer email."}, HTTPStatus.BAD_REQUEST)
+        if len(reference) < 4:
+            return self.send_json({"error": "Enter a payment reference or account reference."}, HTTPStatus.BAD_REQUEST)
         with db() as conn:
             conn.execute("UPDATE users SET subscribed = 1, subscription_price = 15 WHERE id = ?", (user["id"],))
+            conn.execute(
+                "INSERT INTO payments (user_id, plan_name, amount, currency, billing_name, billing_email, card_last4, method, reference, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (user["id"], "Full sourcing monthly", 15, "GBP", payer_name, payer_email, reference[-4:], method, reference[-32:], "active"),
+            )
             updated = conn.execute("SELECT * FROM users WHERE id = ?", (user["id"],)).fetchone()
-        return self.send_json({"user": self.user_payload(updated), "message": "Full sourcing unlocked at £15/month."})
+        return self.send_json({"user": self.user_payload(updated), "message": "Payment method linked to your account. Full sourcing unlocked at £15/month."})
+
+    def deals_response(self):
+        user = self.current_user_row()
+        has_payment = False
+        if user:
+            with db() as conn:
+                has_payment = conn.execute(
+                    "SELECT 1 FROM payments WHERE user_id = ? AND status = 'active' LIMIT 1",
+                    (user["id"],),
+                ).fetchone() is not None
+        return self.send_json({"deals": DEALS, "sourcers": SOURCERS, "fullAccess": bool(user and user["subscribed"] and has_payment)})
 
     def chat(self, data):
         user = self.current_user()
@@ -313,7 +359,21 @@ class Handler(BaseHTTPRequestHandler):
 
     def user_payload(self, row):
         profile = SOURCERS[row["sourcer_index"]]
-        return {"name": row["name"], "email": row["email"], "provider": row["provider"], "subscribed": bool(row["subscribed"]), "subscriptionPrice": row["subscription_price"], "profile": profile}
+        with db() as conn:
+            payment = conn.execute(
+                "SELECT method, reference, status FROM payments WHERE user_id = ? AND status = 'active' ORDER BY id DESC LIMIT 1",
+                (row["id"],),
+            ).fetchone()
+        return {
+            "name": row["name"],
+            "email": row["email"],
+            "provider": row["provider"],
+            "subscribed": bool(row["subscribed"] and payment),
+            "subscriptionPrice": row["subscription_price"],
+            "paymentMethod": payment["method"] if payment else None,
+            "paymentReference": payment["reference"] if payment else None,
+            "profile": profile
+        }
 
     def session_token(self):
         cookie = SimpleCookie(self.headers.get("Cookie"))
