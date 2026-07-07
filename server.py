@@ -70,6 +70,11 @@ def init_db():
             password_hash TEXT NOT NULL,
             provider TEXT NOT NULL,
             sourcer_index INTEGER NOT NULL,
+            phone TEXT DEFAULT '',
+            company TEXT DEFAULT '',
+            city TEXT DEFAULT '',
+            investor_type TEXT DEFAULT '',
+            newsletter_opt_in INTEGER DEFAULT 1,
             subscribed INTEGER DEFAULT 0,
             subscription_price INTEGER DEFAULT 15
         );
@@ -111,6 +116,15 @@ def init_db():
             conn.execute("ALTER TABLE users ADD COLUMN subscribed INTEGER DEFAULT 0")
         if "subscription_price" not in columns:
             conn.execute("ALTER TABLE users ADD COLUMN subscription_price INTEGER DEFAULT 15")
+        for name, definition in {
+            "phone": "TEXT DEFAULT ''",
+            "company": "TEXT DEFAULT ''",
+            "city": "TEXT DEFAULT ''",
+            "investor_type": "TEXT DEFAULT ''",
+            "newsletter_opt_in": "INTEGER DEFAULT 1",
+        }.items():
+            if name not in columns:
+                conn.execute(f"ALTER TABLE users ADD COLUMN {name} {definition}")
         payment_columns = [row["name"] for row in conn.execute("PRAGMA table_info(payments)").fetchall()]
         if "method" not in payment_columns:
             conn.execute("ALTER TABLE payments ADD COLUMN method TEXT DEFAULT 'card'")
@@ -196,6 +210,10 @@ class Handler(BaseHTTPRequestHandler):
             return self.confirm_password_reset(data)
         if path == "/api/subscribe":
             return self.subscribe(data)
+        if path == "/api/profile":
+            return self.update_profile(data)
+        if path == "/api/newsletter/send":
+            return self.send_weekly_newsletter()
         if path == "/api/chat":
             return self.chat(data)
         self.send_error(HTTPStatus.NOT_FOUND)
@@ -204,13 +222,18 @@ class Handler(BaseHTTPRequestHandler):
         name = (data.get("name") or "").strip()
         email = (data.get("email") or "").strip().lower()
         password = data.get("password") or ""
+        phone = (data.get("phone") or "").strip()
+        company = (data.get("company") or "").strip()
+        city = (data.get("city") or "").strip()
+        investor_type = (data.get("investorType") or "").strip()
+        newsletter = 1 if data.get("newsletter", True) else 0
         if not name or "@" not in email or len(password) < 6:
             return self.send_json({"error": "Enter name, valid email, and 6+ character password."}, HTTPStatus.BAD_REQUEST)
         try:
             with db() as conn:
                 conn.execute(
-                    "INSERT INTO users (name, email, password_hash, provider, sourcer_index) VALUES (?, ?, ?, ?, ?)",
-                    (name, email, password_hash(password), "Email", sourcer_index(email)),
+                    "INSERT INTO users (name, email, password_hash, provider, sourcer_index, phone, company, city, investor_type, newsletter_opt_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (name, email, password_hash(password), "Email", sourcer_index(email), phone, company, city, investor_type, newsletter),
                 )
         except sqlite3.IntegrityError:
             return self.send_json({"error": "Account already exists. Sign in instead."}, HTTPStatus.CONFLICT)
@@ -233,8 +256,9 @@ class Handler(BaseHTTPRequestHandler):
             if user:
                 token = secrets.token_urlsafe(32)
                 conn.execute("INSERT INTO password_resets (token, user_id) VALUES (?, ?)", (token, user["id"]))
+                public_base_url = os.environ.get("APP_BASE_URL", "").rstrip("/")
                 host = self.headers.get("Host", f"{HOST}:{PORT}")
-                reset_link = f"http://{host}/reset?token={token}"
+                reset_link = f"{public_base_url}/reset?token={token}" if public_base_url else f"http://{host}/reset?token={token}"
                 conn.execute(
                     "INSERT INTO email_outbox (recipient, subject, body) VALUES (?, ?, ?)",
                     (email, "Reset your NIRA & CO password", f"Open this link to reset your password: {reset_link}"),
@@ -296,6 +320,54 @@ class Handler(BaseHTTPRequestHandler):
             )
             updated = conn.execute("SELECT * FROM users WHERE id = ?", (user["id"],)).fetchone()
         return self.send_json({"user": self.user_payload(updated), "message": "Payment method linked to your account. Full sourcing unlocked at £15/month."})
+
+    def update_profile(self, data):
+        user = self.current_user_row()
+        if not user:
+            return self.send_json({"error": "Sign in before updating your profile."}, HTTPStatus.UNAUTHORIZED)
+        fields = {
+            "name": (data.get("name") or user["name"]).strip(),
+            "phone": (data.get("phone") or "").strip(),
+            "company": (data.get("company") or "").strip(),
+            "city": (data.get("city") or "").strip(),
+            "investor_type": (data.get("investorType") or "").strip(),
+            "newsletter_opt_in": 1 if data.get("newsletter", False) else 0,
+        }
+        if not fields["name"]:
+            return self.send_json({"error": "Name is required."}, HTTPStatus.BAD_REQUEST)
+        with db() as conn:
+            conn.execute(
+                "UPDATE users SET name = ?, phone = ?, company = ?, city = ?, investor_type = ?, newsletter_opt_in = ? WHERE id = ?",
+                (fields["name"], fields["phone"], fields["company"], fields["city"], fields["investor_type"], fields["newsletter_opt_in"], user["id"]),
+            )
+            updated = conn.execute("SELECT * FROM users WHERE id = ?", (user["id"],)).fetchone()
+        return self.send_json({"user": self.user_payload(updated), "message": "User details saved."})
+
+    def send_weekly_newsletter(self):
+        user = self.current_user_row()
+        if not user:
+            return self.send_json({"error": "Sign in before sending newsletters."}, HTTPStatus.UNAUTHORIZED)
+        featured = sorted(DEALS, key=lambda d: (d["yield"], d["discount"]), reverse=True)[:6]
+        deal_lines = "\n".join(
+            f"- {deal['title']} | {deal['location']} | {deal['strategy']} | {deal['yield']}% yield | {deal['link']}"
+            for deal in featured
+        )
+        subject = "NIRA & CO weekly property deals"
+        delivery_counts = {"sent": 0, "outbox": 0}
+        with db() as conn:
+            recipients = conn.execute("SELECT email, name FROM users WHERE newsletter_opt_in = 1").fetchall()
+            for recipient in recipients:
+                body = (
+                    f"Hello {recipient['name']},\n\n"
+                    "Here are this week's available NIRA & CO sourcing opportunities:\n\n"
+                    f"{deal_lines}\n\n"
+                    "Paid members unlock full sourcing packs, property links, sourcer chat and pipeline support.\n"
+                    "Visit https://niraandco.co.uk/app to view deals.\n"
+                )
+                conn.execute("INSERT INTO email_outbox (recipient, subject, body) VALUES (?, ?, ?)", (recipient["email"], subject, body))
+                delivery = send_email(recipient["email"], subject, body)
+                delivery_counts["sent" if delivery == "sent" else "outbox"] += 1
+        return self.send_json({"message": f"Weekly newsletter prepared for {len(recipients)} subscribed users.", "sent": delivery_counts["sent"], "outbox": delivery_counts["outbox"]})
 
     def deals_response(self):
         user = self.current_user_row()
@@ -368,6 +440,11 @@ class Handler(BaseHTTPRequestHandler):
             "name": row["name"],
             "email": row["email"],
             "provider": row["provider"],
+            "phone": row["phone"],
+            "company": row["company"],
+            "city": row["city"],
+            "investorType": row["investor_type"],
+            "newsletter": bool(row["newsletter_opt_in"]),
             "subscribed": bool(row["subscribed"] and payment),
             "subscriptionPrice": row["subscription_price"],
             "paymentMethod": payment["method"] if payment else None,
