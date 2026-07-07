@@ -6,10 +6,10 @@
   <title>NIRA &amp; CO App</title>
   <link rel="icon" href="/assets/ratada-icon-192.png">
   <style>
-    :root { --ink:#17211c; --muted:#5e6b64; --line:#d9dfd9; --green:#116447; --soft:#f5f7f2; --dark:#13221d; --amber:#bf7c1f; --blue:#2d6f9f; }
-    * { box-sizing: border-box; } body { margin:0; font-family: Inter, system-ui, Segoe UI, sans-serif; background:var(--soft); color:var(--ink); }
+    :root { --ink:#1d2430; --muted:#65707c; --line:#e1d8c9; --green:#0c7a63; --soft:#f7f4ed; --dark:#142333; --amber:#c98324; --blue:#315f9f; --plum:#5b2c65; --gold:#f3c35b; }
+    * { box-sizing: border-box; } body { margin:0; font-family: Inter, system-ui, Segoe UI, sans-serif; background:linear-gradient(180deg,#f7f4ed,#eef5f0); color:var(--ink); }
     button, input, select { font: inherit; } button { cursor:pointer; border:0; } a { color:var(--green); font-weight:900; }
-    .auth { position:fixed; inset:0; z-index:5; display:grid; place-items:center; padding:20px; background:linear-gradient(rgba(19,34,29,.78),rgba(19,34,29,.78)),url("https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1600&q=80"); background-size:cover; }
+    .auth { position:fixed; inset:0; z-index:5; display:grid; place-items:center; padding:20px; background:linear-gradient(135deg, rgba(20,35,51,.86), rgba(91,44,101,.76), rgba(12,122,99,.7)),url("https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1600&q=80"); background-size:cover; }
     .auth[hidden], .view[hidden] { display:none; }
     .panel { width:min(450px,100%); background:white; border-radius:8px; padding:24px; box-shadow:0 18px 42px rgba(23,33,28,.22); }
     .brand { display:flex; align-items:center; gap:10px; font-weight:900; } .brand img { width:36px; height:36px; border-radius:8px; }
@@ -18,50 +18,56 @@
     .tabs button { min-height:36px; border-radius:6px; background:transparent; color:var(--muted); font-weight:800; }
     .tabs button.active { background:white; color:var(--green); box-shadow:0 4px 12px rgba(23,33,28,.08); }
     form { display:grid; gap:10px; } form[hidden] { display:none; } input, select { width:100%; min-height:42px; border:1px solid var(--line); border-radius:7px; padding:0 12px; }
-    .primary { min-height:42px; border-radius:7px; background:var(--green); color:white; font-weight:900; padding:0 14px; }
+    .primary { min-height:42px; border-radius:7px; background:linear-gradient(135deg,var(--green),var(--plum)); color:white; font-weight:900; padding:0 14px; }
     .ghost { min-height:38px; border-radius:7px; border:1px solid var(--line); background:white; color:var(--ink); padding:0 12px; }
     .app { display:grid; grid-template-columns:250px 1fr; min-height:100vh; }
-    aside { background:var(--dark); color:white; padding:22px 18px; } aside nav { display:grid; gap:8px; margin-top:28px; }
+    aside { background:linear-gradient(180deg,var(--dark),#231b3d 62%,#0c4c42); color:white; padding:22px 18px; } aside nav { display:grid; gap:8px; margin-top:28px; }
     .nav-btn { min-height:42px; text-align:left; border-radius:7px; background:transparent; color:#c8d7ce; padding:0 12px; font-weight:800; }
-    .nav-btn.active, .nav-btn:hover { background:rgba(255,255,255,.09); color:white; }
+    .nav-btn.active, .nav-btn:hover { background:rgba(243,195,91,.16); color:white; }
     main { min-width:0; } .top { min-height:76px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 28px; border-bottom:1px solid var(--line); background:rgba(245,247,242,.92); position:sticky; top:0; z-index:2; }
     .content { padding:22px 28px; display:grid; gap:18px; } .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
-    .card, .deal, .tools, .chat-box { background:white; border:1px solid var(--line); border-radius:8px; padding:16px; box-shadow:0 8px 20px rgba(23,33,28,.05); }
+    .card, .deal, .tools, .chat-box { background:white; border:1px solid var(--line); border-radius:8px; padding:16px; box-shadow:0 12px 28px rgba(29,36,48,.08); }
     .card span, .deal p { color:var(--muted); font-size:13px; } .card strong { display:block; margin-top:8px; font-size:26px; }
     .workspace { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:18px; align-items:start; } .filters { display:grid; grid-template-columns:1fr 160px 160px 160px; gap:10px; }
     .deals { display:grid; gap:12px; } .deal { display:grid; grid-template-columns:112px 1fr auto; gap:14px; align-items:center; position:relative; overflow:hidden; }
     .deal.locked { opacity:.72; } .deal.locked:after { content:"Full details locked"; position:absolute; right:14px; top:14px; background:#f9ecd6; color:var(--amber); border-radius:999px; padding:6px 10px; font-size:12px; font-weight:900; }
     .thumb { height:86px; border-radius:7px; background-size:cover; background-position:center; }
-    .pill { display:inline-flex; margin:3px 5px 0 0; padding:5px 8px; border-radius:999px; background:#dff1e7; color:var(--green); font-size:11px; font-weight:900; }
+    .pill { display:inline-flex; margin:3px 5px 0 0; padding:5px 8px; border-radius:999px; background:#dff4ed; color:var(--green); font-size:11px; font-weight:900; }
     .pill.warn { background:#f9ecd6; color:var(--amber); } .pill.blue { background:#dcebf4; color:var(--blue); }
     .profile-grid, .pipeline-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
     .profile-card { background:white; border:1px solid var(--line); border-radius:8px; padding:16px; }
     .stage { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }
     .stage strong { font-size:16px; } .count { width:34px; height:34px; border-radius:8px; display:grid; place-items:center; background:var(--green); color:white; font-weight:900; }
     .subscription { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:18px; }
-    .price-card { background:var(--dark); color:white; border-radius:8px; padding:24px; } .price-card strong { display:block; font-size:48px; margin:8px 0; }
+    .price-card { background:linear-gradient(155deg,var(--dark),var(--plum)); color:white; border-radius:8px; padding:24px; } .price-card strong { display:block; font-size:48px; margin:8px 0; color:var(--gold); }
     .messages { height:360px; overflow:auto; display:grid; align-content:start; gap:10px; margin-bottom:12px; }
     .message { padding:10px 12px; border-radius:8px; background:#f5f7f2; } .message.ai { background:#dff1e7; } .message.support { background:#dcebf4; }
     .chat-form { display:grid; grid-template-columns:1fr auto; gap:10px; }
     .toast { position:fixed; right:18px; bottom:18px; background:var(--dark); color:white; padding:12px 14px; border-radius:8px; opacity:0; transform:translateY(8px); transition:.2s; z-index:8; } .toast.show { opacity:1; transform:none; }
+    .show-password { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
+    .show-password input { width:auto; min-height:auto; }
+    .auth-link { margin-top:12px; width:100%; min-height:38px; background:transparent; color:var(--green); font-weight:900; text-decoration:underline; }
     @media (max-width:950px){ .app{grid-template-columns:1fr}.workspace,.stats,.subscription,.profile-grid,.pipeline-grid{grid-template-columns:1fr} aside{position:static}.filters{grid-template-columns:1fr}.deal{grid-template-columns:90px 1fr}.price{grid-column:1/-1}.chat-form{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
   <section class="auth" id="auth">
     <div class="panel">
-      <div class="brand"><img src="/assets/ratada-logo.svg" alt=""> NIRA &amp; CO Global source</div>
+      <div class="brand"><img src="/assets/nira-co-building-logo.png" alt=""> NIRA &amp; CO Global source</div>
       <h1 id="authTitle">Sign in</h1>
       <p>Use your account before entering the deal-sourcing workspace.</p>
       <div class="tabs"><button class="active" id="signinTab">Sign in</button><button id="signupTab">Sign up</button></div>
-      <form id="signinForm"><input id="signinEmail" type="email" placeholder="Email" required><input id="signinPassword" type="password" placeholder="Password" required><button class="primary">Sign in</button></form>
-      <form id="signupForm" hidden><input id="signupName" placeholder="Full name" required><input id="signupEmail" type="email" placeholder="Email" required><input id="signupPassword" type="password" minlength="6" placeholder="Create password" required><button class="primary">Create account</button></form>
+      <form id="signinForm"><input id="signinEmail" type="email" placeholder="Email" required><input id="signinPassword" class="password-input" type="password" placeholder="Password" required><label class="show-password"><input type="checkbox" data-toggle-password="signinPassword"> Show password</label><button class="primary">Sign in</button></form>
+      <form id="signupForm" hidden><input id="signupName" placeholder="Full name" required><input id="signupEmail" type="email" placeholder="Email" required><input id="signupPassword" class="password-input" type="password" minlength="6" placeholder="Create password" required><label class="show-password"><input type="checkbox" data-toggle-password="signupPassword"> Show password</label><button class="primary">Create account</button></form>
+      <form id="forgotForm" hidden><input id="forgotEmail" type="email" placeholder="Account email" required><button class="primary">Send reset link</button><p id="resetLinkNote"></p></form>
+      <form id="resetForm" hidden><input id="resetPassword" class="password-input" type="password" minlength="6" placeholder="New password" required><label class="show-password"><input type="checkbox" data-toggle-password="resetPassword"> Show password</label><button class="primary">Update password</button></form>
+      <button class="auth-link" id="forgotBtn" type="button">Forgot password? Send reset link</button>
     </div>
   </section>
 
   <div class="app">
     <aside>
-      <div class="brand"><img src="/assets/ratada-logo.svg" alt=""> NIRA &amp; CO</div>
+      <div class="brand"><img src="/assets/nira-co-building-logo.png" alt=""> NIRA &amp; CO</div>
       <nav>
         <button class="nav-btn active" data-view="dashboard">Dashboard</button>
         <button class="nav-btn" data-view="deals">Deals</button>
@@ -91,7 +97,21 @@
         <section class="view" id="subscriptionView" hidden>
           <div class="subscription">
             <div class="card"><h2>Unlock full sourcing access</h2><p>Free users can preview a few opportunities. Paid members unlock all HMO, BTL, flip, auction, off-market, developer and short-let deals, plus team chat access.</p><span class="pill">Monthly access</span><span class="pill blue">Cancel anytime</span><span class="pill warn">Prototype checkout</span></div>
-            <div class="price-card"><span>Full sourcing</span><strong>£15</strong><p>per person / month</p><button class="primary" id="subscribeBtn">Subscribe for £15/month</button></div>
+            <div class="price-card">
+              <span>Full sourcing</span><strong>£15</strong><p>per person / month</p>
+              <form id="paymentForm">
+                <input id="payerName" placeholder="Account holder / payer name" required>
+                <input id="payerEmail" type="email" placeholder="Billing email" required>
+                <select id="paymentMethod" required>
+                  <option value="card">Debit / credit card</option>
+                  <option value="uk_bank">UK bank transfer / Open Banking</option>
+                  <option value="airtim">Airtim payment reference</option>
+                </select>
+                <input id="paymentReference" placeholder="Card last 4, bank reference, or Airtim reference" required>
+                <button class="primary" id="subscribeBtn">Link payment and subscribe</button>
+              </form>
+              <p>Prototype checkout: for launch, connect Stripe, GoCardless/Open Banking, or your Airtim payment provider.</p>
+            </div>
           </div>
         </section>
 
@@ -103,29 +123,79 @@
   </div>
   <div class="toast" id="toast"></div>
   <script>
-    let user = null, deals = [], sourcers = [], currentView = "dashboard";
+    let user = null, deals = [], sourcers = [], currentView = "dashboard", fullAccess = false;
     const $ = (id) => document.getElementById(id);
     const money = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 });
     const titles = { dashboard:"Dashboard", deals:"Deals", profiles:"Sourcer profiles", pipeline:"Pipeline", subscription:"Subscription", chat:"Team chat" };
     function toast(message){ $("toast").textContent = message; $("toast").classList.add("show"); setTimeout(() => $("toast").classList.remove("show"), 2200); }
-    function mode(which){ const up = which === "up"; $("signupForm").hidden = !up; $("signinForm").hidden = up; $("signupTab").classList.toggle("active", up); $("signinTab").classList.toggle("active", !up); $("authTitle").textContent = up ? "Sign up" : "Sign in"; }
+    let resetToken = new URLSearchParams(location.search).get("reset");
+    function mode(which){
+      const up = which === "up", forgot = which === "forgot", reset = which === "reset";
+      $("signupForm").hidden = !up; $("signinForm").hidden = up || forgot || reset; $("forgotForm").hidden = !forgot; $("resetForm").hidden = !reset;
+      $("signupTab").classList.toggle("active", up); $("signinTab").classList.toggle("active", !up && !forgot && !reset);
+      $("forgotBtn").hidden = forgot || reset;
+      $("authTitle").textContent = reset ? "Create a new password" : forgot ? "Reset your password" : up ? "Sign up" : "Sign in";
+    }
     $("signinTab").onclick = () => mode("in"); $("signupTab").onclick = () => mode("up");
+    document.querySelectorAll("[data-toggle-password]").forEach(toggle => {
+      toggle.addEventListener("change", () => {
+        const input = $(toggle.dataset.togglePassword);
+        input.type = toggle.checked ? "text" : "password";
+      });
+    });
     async function api(path, body){ const res = await fetch(path, { method: body ? "POST" : "GET", headers: {"Content-Type":"application/json"}, body: body && JSON.stringify(body) }); const data = await res.json(); if(!res.ok) throw new Error(data.error || "Something went wrong"); return data; }
     $("signupForm").onsubmit = async (e) => { e.preventDefault(); try { const data = await api("/api/signup", { name: $("signupName").value, email: $("signupEmail").value, password: $("signupPassword").value }); user = data.user; $("auth").hidden = true; await loadDeals(); } catch(err){ toast(err.message); } };
     $("signinForm").onsubmit = async (e) => { e.preventDefault(); try { const data = await api("/api/signin", { email: $("signinEmail").value, password: $("signinPassword").value }); user = data.user; $("auth").hidden = true; await loadDeals(); } catch(err){ toast(err.message); } };
+    $("forgotBtn").onclick = () => mode("forgot");
+    $("forgotForm").onsubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const data = await api("/api/password-reset/request", { email: $("forgotEmail").value });
+        $("resetLinkNote").innerHTML = data.resetLink
+          ? `${data.delivery === "sent" ? "Reset Password page link sent to the email address." : "Prototype email saved in the outbox. Open Reset Password page:"} <a href="${data.resetLink}">${data.resetLink}</a>`
+          : data.message;
+        toast(data.message);
+      } catch(err){ toast(err.message); }
+    };
+    $("resetForm").onsubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const data = await api("/api/password-reset/confirm", { token: resetToken, password: $("resetPassword").value });
+        user = data.user;
+        history.replaceState({}, "", "/app");
+        $("auth").hidden = true;
+        await loadDeals();
+        toast("Password updated");
+      } catch(err){ toast(err.message); }
+    };
     $("signout").onclick = async () => { await api("/api/signout", {}); user = null; $("auth").hidden = false; };
     document.querySelectorAll(".nav-btn").forEach(btn => btn.onclick = () => showView(btn.dataset.view));
     function showView(name){ currentView = name; document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === name)); document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== `${name}View`); $("pageTitle").textContent = titles[name]; if(name === "chat") loadChat(); render(); }
-    async function boot(){ const session = await api("/api/session"); user = session.user; $("auth").hidden = !!user; await loadDeals(); }
-    async function loadDeals(){ const data = await api("/api/deals"); deals = data.deals; sourcers = data.sourcers; populateFilters(); render(); }
+    async function boot(){ if(resetToken){ $("auth").hidden = false; mode("reset"); await loadDeals(); return; } if(new URLSearchParams(location.search).get("forgot")){ $("auth").hidden = false; mode("forgot"); await loadDeals(); return; } const session = await api("/api/session"); user = session.user; $("auth").hidden = !!user; await loadDeals(); }
+    async function loadDeals(){ const data = await api("/api/deals"); deals = data.deals; sourcers = data.sourcers; fullAccess = data.fullAccess; populateFilters(); render(); }
     function populateFilters(){ for (const [id, key] of [["region","region"],["strategy","strategy"],["source","source"]]) { const select = $(id); const value = select.value || "All"; select.innerHTML = "<option>All</option>" + [...new Set(deals.map(d => d[key]))].sort().map(v => `<option>${v}</option>`).join(""); select.value = [...select.options].some(o => o.value === value) ? value : "All"; select.oninput = render; } $("search").oninput = render; }
     function filtered(){ const q = $("search")?.value.toLowerCase() || ""; return deals.filter(d => (!q || `${d.title} ${d.location} ${d.strategy} ${d.source} ${d.owner}`.toLowerCase().includes(q)) && ($("region").value === "All" || d.region === $("region").value) && ($("strategy").value === "All" || d.strategy === $("strategy").value) && ($("source").value === "All" || d.source === $("source").value)); }
-    function accessible(list){ return user?.subscribed ? list : list.slice(0, 4); }
+    function accessible(list){ return fullAccess ? list : list.slice(0, 4); }
     function dealCard(d, locked=false){ return `<article class="deal ${locked ? "locked" : ""}"><div class="thumb" style="background-image:url('${d.image}')"></div><div><h2>${d.title}</h2><p>${d.location} · ${d.source} · ${d.strategy} · Owner: ${d.owner}</p><span class="pill">${d.yield}% yield</span><span class="pill blue">${d.discount}% discount</span><span class="pill warn">${d.status}</span><br>${locked ? `<button class="ghost" onclick="showView('subscription')">Unlock full deal</button>` : `<a href="${d.link}" target="_blank" rel="noopener">View listings</a>`}</div><div class="price"><strong>${locked ? "£--" : money.format(d.price)}</strong><p>guide price</p></div></article>`; }
-    function render(){ const visible = filtered(); const open = accessible(visible); const avgY = open.reduce((s,d)=>s+d.yield,0)/(open.length || 1); const avgD = open.reduce((s,d)=>s+d.discount,0)/(open.length || 1); $("dealCount").textContent = user?.subscribed ? visible.length : `${open.length}/${visible.length}`; $("avgYield").textContent = avgY.toFixed(1)+"%"; $("avgDiscount").textContent = Math.round(avgD)+"%"; $("subStatus").textContent = user?.subscribed ? "Active" : "Free"; $("brief").textContent = user ? `${user.name}'s workspace · ${user.profile.role} · ${user.subscribed ? "Full access" : "Free preview"}` : "Create or sign into an account to continue."; $("profile").innerHTML = user ? `<h2>${user.name}</h2><p>${user.email}</p><span class="pill">${user.profile.market}</span><span class="pill">${user.profile.closeRate}% close rate</span>${user.profile.tags.map(t=>`<span class="pill">${t}</span>`).join("")}` : "<h2>Sourcer profile</h2><p>Sign in to create your profile.</p>"; $("featuredDeals").innerHTML = open.slice(0,3).map(d => dealCard(d)).join(""); $("deals").innerHTML = visible.map((d,i) => dealCard(d, !user?.subscribed && i > 3)).join(""); renderProfiles(); renderPipeline(); }
+    function render(){ const visible = filtered(); const open = accessible(visible); const avgY = open.reduce((s,d)=>s+d.yield,0)/(open.length || 1); const avgD = open.reduce((s,d)=>s+d.discount,0)/(open.length || 1); $("dealCount").textContent = fullAccess ? visible.length : `${open.length}/${visible.length}`; $("avgYield").textContent = avgY.toFixed(1)+"%"; $("avgDiscount").textContent = Math.round(avgD)+"%"; $("subStatus").textContent = fullAccess ? "Paid" : "Preview"; $("brief").textContent = user ? `${user.name}'s workspace · ${user.profile.role} · ${fullAccess ? "Full paid access" : "Free preview - payment required for full access"}` : "Create or sign into an account to continue."; $("profile").innerHTML = user ? `<h2>${user.name}</h2><p>${user.email}</p><span class="pill">${user.profile.market}</span><span class="pill">${user.profile.closeRate}% close rate</span><span class="pill ${fullAccess ? "" : "warn"}">${fullAccess ? "Payment linked" : "No payment - preview only"}</span>${user.paymentMethod ? `<span class="pill blue">${user.paymentMethod}</span>` : ""}${user.profile.tags.map(t=>`<span class="pill">${t}</span>`).join("")}` : "<h2>Sourcer profile</h2><p>Sign in to create your profile.</p>"; $("featuredDeals").innerHTML = open.slice(0,3).map(d => dealCard(d)).join(""); $("deals").innerHTML = visible.map((d,i) => dealCard(d, !fullAccess && i > 3)).join(""); renderProfiles(); renderPipeline(); }
     function renderProfiles(){ $("profiles").innerHTML = sourcers.map(s => `<article class="profile-card"><h2>${s.name}</h2><p>${s.role}</p><span class="pill">${s.market}</span><span class="pill blue">${s.closeRate}% close rate</span><span class="pill warn">${s.saved} saved leads</span>${s.tags.map(t=>`<span class="pill">${t}</span>`).join("")}</article>`).join(""); }
     function renderPipeline(){ const stages = [{name:"New leads", detail:"Fresh submissions and imports", count:deals.length}, {name:"Comparable check", detail:"Pricing, rent and local demand", count:Math.round(deals.length*.65)}, {name:"Investor pack", detail:"Numbers, photos, risks and exit", count:Math.round(deals.length*.38)}, {name:"Offer submitted", detail:"Active negotiation", count:Math.round(deals.length*.22)}]; $("pipeline").innerHTML = stages.map(s => `<article class="card stage"><div><strong>${s.name}</strong><p>${s.detail}</p></div><div class="count">${s.count}</div></article>`).join(""); }
-    $("subscribeBtn").onclick = async () => { try { const data = await api("/api/subscribe", {}); user = data.user; toast(data.message); render(); showView("deals"); } catch(err){ toast(err.message); } };
+    $("paymentForm").onsubmit = async (event) => {
+      event.preventDefault();
+      try {
+        const data = await api("/api/subscribe", {
+          payerName: $("payerName").value,
+          payerEmail: $("payerEmail").value,
+          method: $("paymentMethod").value,
+          reference: $("paymentReference").value
+        });
+        user = data.user;
+        toast(data.message);
+        await loadDeals();
+        render();
+        showView("deals");
+      } catch(err){ toast(err.message); }
+    };
     async function loadChat(){ const data = await api("/api/chat"); renderMessages(data.messages); }
     function renderMessages(messages){ $("messages").innerHTML = messages.map(m => `<div class="message ${m.role}"><strong>${m.from}</strong><p>${m.text}</p></div>`).join(""); $("messages").scrollTop = $("messages").scrollHeight; }
     $("chatForm").onsubmit = async (e) => { e.preventDefault(); try { const text = $("chatInput").value.trim(); if(!text) return; $("chatInput").value = ""; const data = await api("/api/chat", { text }); renderMessages(data.messages); } catch(err){ toast(err.message); } };

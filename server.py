@@ -8,7 +8,9 @@ import hmac
 import json
 import os
 import secrets
+import smtplib
 import sqlite3
+from email.message import EmailMessage
 
 ROOT = Path(__file__).resolve().parent
 DB_PATH = ROOT / "ratada.sqlite3"
@@ -76,12 +78,44 @@ def init_db():
             user_id INTEGER NOT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
+        CREATE TABLE IF NOT EXISTS password_resets (
+            token TEXT PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            used INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS email_outbox (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            recipient TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            body TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS payments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            plan_name TEXT NOT NULL,
+            amount INTEGER NOT NULL,
+            currency TEXT NOT NULL,
+            billing_name TEXT NOT NULL,
+            billing_email TEXT NOT NULL,
+            card_last4 TEXT NOT NULL,
+            method TEXT DEFAULT 'card',
+            reference TEXT DEFAULT '',
+            status TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
         """)
         columns = [row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()]
         if "subscribed" not in columns:
             conn.execute("ALTER TABLE users ADD COLUMN subscribed INTEGER DEFAULT 0")
         if "subscription_price" not in columns:
             conn.execute("ALTER TABLE users ADD COLUMN subscription_price INTEGER DEFAULT 15")
+        payment_columns = [row["name"] for row in conn.execute("PRAGMA table_info(payments)").fetchall()]
+        if "method" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN method TEXT DEFAULT 'card'")
+        if "reference" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN reference TEXT DEFAULT ''")
 
 
 def password_hash(password, salt=None):
@@ -99,6 +133,32 @@ def sourcer_index(email):
     return sum(ord(ch) for ch in email.lower()) % len(SOURCERS)
 
 
+def send_email(recipient, subject, body):
+    host = os.environ.get("SMTP_HOST")
+    sender = os.environ.get("SMTP_FROM")
+    if not host or not sender:
+        return "outbox"
+
+    message = EmailMessage()
+    message["From"] = sender
+    message["To"] = recipient
+    message["Subject"] = subject
+    message.set_content(body)
+
+    port = int(os.environ.get("SMTP_PORT", "587"))
+    username = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_PASSWORD")
+    use_tls = os.environ.get("SMTP_TLS", "1") != "0"
+
+    with smtplib.SMTP(host, port, timeout=15) as smtp:
+        if use_tls:
+            smtp.starttls()
+        if username and password:
+            smtp.login(username, password)
+        smtp.send_message(message)
+    return "sent"
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlparse(self.path).path
@@ -106,10 +166,12 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_file(ROOT / "index.html", "text/html")
         if path == "/app":
             return self.send_file(ROOT / "app.html", "text/html")
+        if path == "/reset":
+            return self.send_file(ROOT / "reset.html", "text/html")
         if path == "/api/session":
             return self.send_json({"user": self.current_user()})
         if path == "/api/deals":
-            return self.send_json({"deals": DEALS, "sourcers": SOURCERS})
+            return self.deals_response()
         if path == "/api/chat":
             return self.send_json({"messages": CHAT_MESSAGES})
         if path.startswith("/assets/"):
@@ -128,8 +190,12 @@ class Handler(BaseHTTPRequestHandler):
             return self.signin(data)
         if path == "/api/signout":
             return self.signout()
+        if path == "/api/password-reset/request":
+            return self.request_password_reset(data)
+        if path == "/api/password-reset/confirm":
+            return self.confirm_password_reset(data)
         if path == "/api/subscribe":
-            return self.subscribe()
+            return self.subscribe(data)
         if path == "/api/chat":
             return self.chat(data)
         self.send_error(HTTPStatus.NOT_FOUND)
@@ -159,6 +225,44 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json({"error": "Email or password is incorrect."}, HTTPStatus.UNAUTHORIZED)
         return self.create_session(email)
 
+    def request_password_reset(self, data):
+        email = (data.get("email") or "").strip().lower()
+        reset_link = None
+        with db() as conn:
+            user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+            if user:
+                token = secrets.token_urlsafe(32)
+                conn.execute("INSERT INTO password_resets (token, user_id) VALUES (?, ?)", (token, user["id"]))
+                host = self.headers.get("Host", f"{HOST}:{PORT}")
+                reset_link = f"http://{host}/reset?token={token}"
+                conn.execute(
+                    "INSERT INTO email_outbox (recipient, subject, body) VALUES (?, ?, ?)",
+                    (email, "Reset your NIRA & CO password", f"Open this link to reset your password: {reset_link}"),
+                )
+        delivery = "not_found"
+        if reset_link:
+            delivery = send_email(
+                email,
+                "Reset your NIRA & CO password",
+                f"Use this link to create a new password:\n\n{reset_link}\n\nIf you did not request this, ignore this email.",
+            )
+        message = "If the email exists, a password reset link has been sent."
+        return self.send_json({"message": message, "resetLink": reset_link, "delivery": delivery})
+
+    def confirm_password_reset(self, data):
+        token = (data.get("token") or "").strip()
+        password = data.get("password") or ""
+        if len(password) < 6:
+            return self.send_json({"error": "Use at least 6 characters for the new password."}, HTTPStatus.BAD_REQUEST)
+        with db() as conn:
+            reset = conn.execute("SELECT * FROM password_resets WHERE token = ? AND used = 0", (token,)).fetchone()
+            if not reset:
+                return self.send_json({"error": "Reset link is invalid or already used."}, HTTPStatus.BAD_REQUEST)
+            conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (password_hash(password), reset["user_id"]))
+            conn.execute("UPDATE password_resets SET used = 1 WHERE token = ?", (token,))
+            user = conn.execute("SELECT * FROM users WHERE id = ?", (reset["user_id"],)).fetchone()
+        return self.create_session(user["email"])
+
     def signout(self):
         token = self.session_token()
         if token:
@@ -170,14 +274,39 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b'{"ok": true}')
 
-    def subscribe(self):
+    def subscribe(self, data):
         user = self.current_user_row()
         if not user:
             return self.send_json({"error": "Sign in before subscribing."}, HTTPStatus.UNAUTHORIZED)
+        method = (data.get("method") or "").strip()
+        payer_name = (data.get("payerName") or "").strip()
+        payer_email = (data.get("payerEmail") or "").strip().lower()
+        reference = (data.get("reference") or "").strip()
+        if method not in {"card", "uk_bank", "airtim"}:
+            return self.send_json({"error": "Choose card, UK bank, or Airtim payment."}, HTTPStatus.BAD_REQUEST)
+        if not payer_name or "@" not in payer_email:
+            return self.send_json({"error": "Enter payer name and payer email."}, HTTPStatus.BAD_REQUEST)
+        if len(reference) < 4:
+            return self.send_json({"error": "Enter a payment reference or account reference."}, HTTPStatus.BAD_REQUEST)
         with db() as conn:
             conn.execute("UPDATE users SET subscribed = 1, subscription_price = 15 WHERE id = ?", (user["id"],))
+            conn.execute(
+                "INSERT INTO payments (user_id, plan_name, amount, currency, billing_name, billing_email, card_last4, method, reference, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (user["id"], "Full sourcing monthly", 15, "GBP", payer_name, payer_email, reference[-4:], method, reference[-32:], "active"),
+            )
             updated = conn.execute("SELECT * FROM users WHERE id = ?", (user["id"],)).fetchone()
-        return self.send_json({"user": self.user_payload(updated), "message": "Full sourcing unlocked at £15/month."})
+        return self.send_json({"user": self.user_payload(updated), "message": "Payment method linked to your account. Full sourcing unlocked at £15/month."})
+
+    def deals_response(self):
+        user = self.current_user_row()
+        has_payment = False
+        if user:
+            with db() as conn:
+                has_payment = conn.execute(
+                    "SELECT 1 FROM payments WHERE user_id = ? AND status = 'active' LIMIT 1",
+                    (user["id"],),
+                ).fetchone() is not None
+        return self.send_json({"deals": DEALS, "sourcers": SOURCERS, "fullAccess": bool(user and user["subscribed"] and has_payment)})
 
     def chat(self, data):
         user = self.current_user()
@@ -230,7 +359,21 @@ class Handler(BaseHTTPRequestHandler):
 
     def user_payload(self, row):
         profile = SOURCERS[row["sourcer_index"]]
-        return {"name": row["name"], "email": row["email"], "provider": row["provider"], "subscribed": bool(row["subscribed"]), "subscriptionPrice": row["subscription_price"], "profile": profile}
+        with db() as conn:
+            payment = conn.execute(
+                "SELECT method, reference, status FROM payments WHERE user_id = ? AND status = 'active' ORDER BY id DESC LIMIT 1",
+                (row["id"],),
+            ).fetchone()
+        return {
+            "name": row["name"],
+            "email": row["email"],
+            "provider": row["provider"],
+            "subscribed": bool(row["subscribed"] and payment),
+            "subscriptionPrice": row["subscription_price"],
+            "paymentMethod": payment["method"] if payment else None,
+            "paymentReference": payment["reference"] if payment else None,
+            "profile": profile
+        }
 
     def session_token(self):
         cookie = SimpleCookie(self.headers.get("Cookie"))
