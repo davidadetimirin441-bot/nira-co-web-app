@@ -17,35 +17,39 @@ DB_PATH = ROOT / "ratada.sqlite3"
 ASSETS = ROOT / "assets"
 HOST = os.environ.get("HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT") or os.environ.get("RATADA_PORT", "8088"))
+PAYMENT_ACCOUNT_NAME = "David Adetimirin"
+PAYMENT_BANK_NAME = "Monzo"
+PAYMENT_ACCOUNT_NUMBER = "95188636"
+PAYMENT_SORT_CODE = "04-00-03"
 
 SOURCERS = [
     {"name": "Aisha Bello", "market": "UK North", "role": "Senior UK sourcer", "closeRate": 31, "saved": 14, "markets": 12, "tags": ["BTL", "HMO", "Off-market"]},
     {"name": "Callum Price", "market": "Midlands", "role": "Auction specialist", "closeRate": 24, "saved": 9, "markets": 8, "tags": ["Auction", "Flip", "Refurb"]},
-    {"name": "Maya Khan", "market": "Dubai", "role": "GCC short-let sourcer", "closeRate": 28, "saved": 11, "markets": 7, "tags": ["Developer", "Short let", "Luxury"]},
-    {"name": "Tunde Okafor", "market": "Lagos", "role": "Africa market sourcer", "closeRate": 36, "saved": 18, "markets": 10, "tags": ["Off-market", "Villas", "Legal review"]},
-    {"name": "Sofia Martins", "market": "Algarve", "role": "Europe coastal sourcer", "closeRate": 22, "saved": 7, "markets": 5, "tags": ["Holiday let", "Coastal", "Yield"]},
+    {"name": "Maya Khan", "market": "London and South East", "role": "Short-let and corporate-let sourcer", "closeRate": 28, "saved": 11, "markets": 7, "tags": ["Short let", "Corporate let", "Commuter"]},
+    {"name": "Tunde Okafor", "market": "Scotland and Wales", "role": "Off-market UK sourcer", "closeRate": 36, "saved": 18, "markets": 10, "tags": ["Off-market", "Title review", "Yield"]},
+    {"name": "Sofia Martins", "market": "South West and coastal UK", "role": "Holiday-let and refurb sourcer", "closeRate": 22, "saved": 7, "markets": 5, "tags": ["Holiday let", "Coastal", "Yield"]},
 ]
 
 DEALS = [
-    {"title": "Three-bed terrace near tram expansion", "location": "Manchester, UK", "region": "UK", "strategy": "Buy-to-let", "source": "Agent", "price": 185000, "yield": 7.6, "discount": 14, "status": "Mortgageable", "owner": "Aisha Bello", "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/manchester/"},
-    {"title": "Auction semi with permitted development angle", "location": "Birmingham, UK", "region": "UK", "strategy": "Flip", "source": "Auction", "price": 142000, "yield": 9.1, "discount": 22, "status": "Refurb", "owner": "Callum Price", "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/birmingham/"},
-    {"title": "Short-let apartment in marina district", "location": "Dubai, UAE", "region": "Middle East", "strategy": "Short let", "source": "Developer", "price": 315000, "yield": 8.8, "discount": 11, "status": "Ready Q4", "owner": "Maya Khan", "image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=640&q=80", "link": "https://www.propertyfinder.ae/en/search?c=1&l=50"},
-    {"title": "Student HMO conversion candidate", "location": "Liverpool, UK", "region": "UK", "strategy": "HMO", "source": "Off-market", "price": 236000, "yield": 10.4, "discount": 19, "status": "Planning check", "owner": "Aisha Bello", "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/liverpool/"},
-    {"title": "Two-unit villa close to new airport road", "location": "Lagos, Nigeria", "region": "Africa", "strategy": "Buy-to-let", "source": "Off-market", "price": 128000, "yield": 11.2, "discount": 27, "status": "Legal review", "owner": "Tunde Okafor", "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=640&q=80", "link": "https://nigeriapropertycentre.com/for-sale/houses/lagos"},
-    {"title": "Coastal townhouse with holiday-let demand", "location": "Algarve, Portugal", "region": "Europe", "strategy": "Short let", "source": "Agent", "price": 410000, "yield": 6.9, "discount": 9, "status": "Viewing slots", "owner": "Sofia Martins", "image": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=640&q=80", "link": "https://www.idealista.pt/en/comprar-casas/faro-distrito/algarve/"},
-    {"title": "Six-bed HMO near university corridor", "location": "Leeds, UK", "region": "UK", "strategy": "HMO", "source": "Agent", "price": 285000, "yield": 11.6, "discount": 16, "status": "Article 4 check", "owner": "Aisha Bello", "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/leeds/"},
-    {"title": "Licensed HMO with seven letting rooms", "location": "Nottingham, UK", "region": "UK", "strategy": "HMO", "source": "Off-market", "price": 352000, "yield": 12.3, "discount": 13, "status": "Licensed", "owner": "Aisha Bello", "image": "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/nottingham/"},
-    {"title": "Victorian terrace conversion candidate", "location": "Sheffield, UK", "region": "UK", "strategy": "HMO", "source": "Auction", "price": 178000, "yield": 10.9, "discount": 21, "status": "Refurb", "owner": "Callum Price", "image": "https://images.unsplash.com/photo-1560184897-ae75f418493e?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/sheffield/"},
-    {"title": "Commuter belt buy-to-let semi", "location": "Luton, UK", "region": "UK", "strategy": "Buy-to-let", "source": "Agent", "price": 248000, "yield": 7.4, "discount": 10, "status": "Tenant demand", "owner": "Callum Price", "image": "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/luton/"},
-    {"title": "Below-market repossession terrace", "location": "Cardiff, UK", "region": "UK", "strategy": "Flip", "source": "Auction", "price": 164000, "yield": 8.1, "discount": 24, "status": "Legal pack", "owner": "Callum Price", "image": "https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/cardiff/"},
-    {"title": "Short-let apartment close to business bay", "location": "Dubai, UAE", "region": "Middle East", "strategy": "Short let", "source": "Developer", "price": 275000, "yield": 9.4, "discount": 12, "status": "Payment plan", "owner": "Maya Khan", "image": "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=640&q=80", "link": "https://www.propertyfinder.ae/en/search?c=1&l=41"},
-    {"title": "Serviced apartment near metro hub", "location": "Doha, Qatar", "region": "Middle East", "strategy": "Short let", "source": "Agent", "price": 226000, "yield": 8.6, "discount": 8, "status": "Furnished", "owner": "Maya Khan", "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=640&q=80", "link": "https://www.propertyfinder.qa/en/search?c=1"},
-    {"title": "Two-flat conversion near lagoon district", "location": "Accra, Ghana", "region": "Africa", "strategy": "Buy-to-let", "source": "Off-market", "price": 148000, "yield": 10.7, "discount": 18, "status": "Title review", "owner": "Tunde Okafor", "image": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=640&q=80", "link": "https://meqasa.com/houses-for-sale-in-ghana"},
-    {"title": "Lekki short-let duplex", "location": "Lagos, Nigeria", "region": "Africa", "strategy": "Short let", "source": "Developer", "price": 210000, "yield": 12.8, "discount": 15, "status": "Finishing stage", "owner": "Tunde Okafor", "image": "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=640&q=80", "link": "https://nigeriapropertycentre.com/for-sale/houses/lagos/lekki"},
-    {"title": "Lisbon commuter apartment block unit", "location": "Lisbon, Portugal", "region": "Europe", "strategy": "Buy-to-let", "source": "Agent", "price": 295000, "yield": 6.8, "discount": 7, "status": "Rent review", "owner": "Sofia Martins", "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=640&q=80", "link": "https://www.idealista.pt/en/comprar-casas/lisboa/"},
-    {"title": "Valencia coastal refurb apartment", "location": "Valencia, Spain", "region": "Europe", "strategy": "Flip", "source": "Auction", "price": 188000, "yield": 7.2, "discount": 17, "status": "Refurb", "owner": "Sofia Martins", "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=640&q=80", "link": "https://www.idealista.com/en/venta-viviendas/valencia-valencia/"},
-    {"title": "Atlanta duplex with rent uplift", "location": "Atlanta, USA", "region": "Americas", "strategy": "Buy-to-let", "source": "Agent", "price": 238000, "yield": 8.9, "discount": 11, "status": "Occupied", "owner": "Maya Khan", "image": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=640&q=80", "link": "https://www.zillow.com/atlanta-ga/duplex/"},
-    {"title": "Bali villa management opportunity", "location": "Bali, Indonesia", "region": "Asia Pacific", "strategy": "Short let", "source": "Developer", "price": 165000, "yield": 13.1, "discount": 9, "status": "Management included", "owner": "Sofia Martins", "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=640&q=80", "link": "https://www.rumah123.com/en/sale/bali/villa/"},
+    {"title": "Three-bed terrace near tram expansion", "location": "Manchester, England", "region": "England", "strategy": "Buy-to-let", "source": "Agent", "price": 185000, "yield": 7.6, "discount": 14, "status": "Mortgageable", "owner": "Aisha Bello", "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/manchester/"},
+    {"title": "Auction semi with permitted development angle", "location": "Birmingham, England", "region": "England", "strategy": "Flip", "source": "Auction", "price": 142000, "yield": 9.1, "discount": 22, "status": "Refurb", "owner": "Callum Price", "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/birmingham/"},
+    {"title": "Coventry city-centre corporate-let apartment", "location": "Coventry, England", "region": "England", "strategy": "Short let", "source": "Agent", "price": 165000, "yield": 8.8, "discount": 11, "status": "Furnished", "owner": "Maya Khan", "image": "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/coventry/"},
+    {"title": "Student HMO conversion candidate", "location": "Liverpool, England", "region": "England", "strategy": "HMO", "source": "Off-market", "price": 236000, "yield": 10.4, "discount": 19, "status": "Planning check", "owner": "Aisha Bello", "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/liverpool/"},
+    {"title": "Glasgow tenement flat with rent uplift", "location": "Glasgow, Scotland", "region": "Scotland", "strategy": "Buy-to-let", "source": "Off-market", "price": 128000, "yield": 9.8, "discount": 17, "status": "Home report", "owner": "Tunde Okafor", "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/glasgow/"},
+    {"title": "Cornwall coastal holiday-let cottage", "location": "Newquay, England", "region": "England", "strategy": "Short let", "source": "Agent", "price": 310000, "yield": 7.2, "discount": 9, "status": "Viewing slots", "owner": "Sofia Martins", "image": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/newquay/"},
+    {"title": "Six-bed HMO near university corridor", "location": "Leeds, England", "region": "England", "strategy": "HMO", "source": "Agent", "price": 285000, "yield": 11.6, "discount": 16, "status": "Article 4 check", "owner": "Aisha Bello", "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/leeds/"},
+    {"title": "Licensed HMO with seven letting rooms", "location": "Nottingham, England", "region": "England", "strategy": "HMO", "source": "Off-market", "price": 352000, "yield": 12.3, "discount": 13, "status": "Licensed", "owner": "Aisha Bello", "image": "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/nottingham/"},
+    {"title": "Victorian terrace conversion candidate", "location": "Sheffield, England", "region": "England", "strategy": "HMO", "source": "Auction", "price": 178000, "yield": 10.9, "discount": 21, "status": "Refurb", "owner": "Callum Price", "image": "https://images.unsplash.com/photo-1560184897-ae75f418493e?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/sheffield/"},
+    {"title": "Commuter belt buy-to-let semi", "location": "Luton, England", "region": "England", "strategy": "Buy-to-let", "source": "Agent", "price": 248000, "yield": 7.4, "discount": 10, "status": "Tenant demand", "owner": "Callum Price", "image": "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/luton/"},
+    {"title": "Below-market repossession terrace", "location": "Cardiff, Wales", "region": "Wales", "strategy": "Flip", "source": "Auction", "price": 164000, "yield": 8.1, "discount": 24, "status": "Legal pack", "owner": "Callum Price", "image": "https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/cardiff/"},
+    {"title": "Edinburgh professional let near tram route", "location": "Edinburgh, Scotland", "region": "Scotland", "strategy": "Buy-to-let", "source": "Agent", "price": 285000, "yield": 7.9, "discount": 10, "status": "Rental demand", "owner": "Maya Khan", "image": "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/edinburgh/"},
+    {"title": "Aberdeen serviced apartment near harbour", "location": "Aberdeen, Scotland", "region": "Scotland", "strategy": "Short let", "source": "Agent", "price": 156000, "yield": 8.6, "discount": 8, "status": "Furnished", "owner": "Maya Khan", "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/aberdeen/"},
+    {"title": "Swansea two-flat conversion candidate", "location": "Swansea, Wales", "region": "Wales", "strategy": "Buy-to-let", "source": "Off-market", "price": 148000, "yield": 10.1, "discount": 18, "status": "Title review", "owner": "Tunde Okafor", "image": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/swansea/"},
+    {"title": "Bristol professional HMO near hospital", "location": "Bristol, England", "region": "England", "strategy": "HMO", "source": "Off-market", "price": 410000, "yield": 9.8, "discount": 12, "status": "Licence check", "owner": "Tunde Okafor", "image": "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/bristol/"},
+    {"title": "Norwich commuter buy-to-let flat", "location": "Norwich, England", "region": "England", "strategy": "Buy-to-let", "source": "Agent", "price": 175000, "yield": 7.1, "discount": 7, "status": "Rent review", "owner": "Sofia Martins", "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/norwich/"},
+    {"title": "Newport refurb apartment close to station", "location": "Newport, Wales", "region": "Wales", "strategy": "Flip", "source": "Auction", "price": 118000, "yield": 7.5, "discount": 17, "status": "Refurb", "owner": "Sofia Martins", "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/newport/"},
+    {"title": "Leicester duplex with rent uplift", "location": "Leicester, England", "region": "England", "strategy": "Buy-to-let", "source": "Agent", "price": 238000, "yield": 8.9, "discount": 11, "status": "Occupied", "owner": "Maya Khan", "image": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/leicester/"},
+    {"title": "Dundee student HMO near university", "location": "Dundee, Scotland", "region": "Scotland", "strategy": "HMO", "source": "Developer", "price": 205000, "yield": 10.6, "discount": 9, "status": "Licence check", "owner": "Sofia Martins", "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=640&q=80", "link": "https://www.zoopla.co.uk/for-sale/property/dundee/"},
 ]
 
 CHAT_MESSAGES = [
@@ -107,8 +111,25 @@ def init_db():
             card_last4 TEXT NOT NULL,
             method TEXT DEFAULT 'card',
             reference TEXT DEFAULT '',
+            recipient_name TEXT DEFAULT 'David Adetimirin',
+            recipient_bank TEXT DEFAULT 'Monzo',
+            recipient_account TEXT DEFAULT '95188636',
+            recipient_sort_code TEXT DEFAULT '04-00-03',
+            billing_cycle TEXT DEFAULT 'monthly',
             status TEXT NOT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS ad_settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            provider TEXT DEFAULT 'Google AdSense',
+            publisher_id TEXT DEFAULT '',
+            ad_slot TEXT DEFAULT '',
+            monthly_page_views INTEGER DEFAULT 0,
+            estimated_rpm REAL DEFAULT 3.0,
+            active INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
         """)
         columns = [row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()]
@@ -130,6 +151,16 @@ def init_db():
             conn.execute("ALTER TABLE payments ADD COLUMN method TEXT DEFAULT 'card'")
         if "reference" not in payment_columns:
             conn.execute("ALTER TABLE payments ADD COLUMN reference TEXT DEFAULT ''")
+        if "recipient_name" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN recipient_name TEXT DEFAULT 'David Adetimirin'")
+        if "recipient_bank" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN recipient_bank TEXT DEFAULT 'Monzo'")
+        if "recipient_account" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN recipient_account TEXT DEFAULT '95188636'")
+        if "recipient_sort_code" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN recipient_sort_code TEXT DEFAULT '04-00-03'")
+        if "billing_cycle" not in payment_columns:
+            conn.execute("ALTER TABLE payments ADD COLUMN billing_cycle TEXT DEFAULT 'monthly'")
 
 
 def password_hash(password, salt=None):
@@ -145,6 +176,11 @@ def verify_password(password, stored):
 
 def sourcer_index(email):
     return sum(ord(ch) for ch in email.lower()) % len(SOURCERS)
+
+
+def token_hash(token):
+    secret = os.environ.get("APP_SECRET", "nira-co-local-secret")
+    return hmac.new(secret.encode(), token.encode(), hashlib.sha256).hexdigest()
 
 
 def send_email(recipient, subject, body):
@@ -188,6 +224,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.deals_response()
         if path == "/api/chat":
             return self.send_json({"messages": CHAT_MESSAGES})
+        if path == "/api/ads":
+            return self.ads_settings()
         if path.startswith("/assets/"):
             return self.send_asset(path.replace("/assets/", "", 1))
         self.send_error(HTTPStatus.NOT_FOUND)
@@ -214,6 +252,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.update_profile(data)
         if path == "/api/newsletter/send":
             return self.send_weekly_newsletter()
+        if path == "/api/ads":
+            return self.save_ads_settings(data)
         if path == "/api/chat":
             return self.chat(data)
         self.send_error(HTTPStatus.NOT_FOUND)
@@ -255,7 +295,7 @@ class Handler(BaseHTTPRequestHandler):
             user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
             if user:
                 token = secrets.token_urlsafe(32)
-                conn.execute("INSERT INTO password_resets (token, user_id) VALUES (?, ?)", (token, user["id"]))
+                conn.execute("INSERT INTO password_resets (token, user_id) VALUES (?, ?)", (token_hash(token), user["id"]))
                 public_base_url = os.environ.get("APP_BASE_URL", "").rstrip("/")
                 host = self.headers.get("Host", f"{HOST}:{PORT}")
                 reset_link = f"{public_base_url}/reset?token={token}" if public_base_url else f"http://{host}/reset?token={token}"
@@ -279,11 +319,13 @@ class Handler(BaseHTTPRequestHandler):
         if len(password) < 6:
             return self.send_json({"error": "Use at least 6 characters for the new password."}, HTTPStatus.BAD_REQUEST)
         with db() as conn:
-            reset = conn.execute("SELECT * FROM password_resets WHERE token = ? AND used = 0", (token,)).fetchone()
+            reset = conn.execute("SELECT * FROM password_resets WHERE token = ? AND used = 0", (token_hash(token),)).fetchone()
+            if not reset:
+                reset = conn.execute("SELECT * FROM password_resets WHERE token = ? AND used = 0", (token,)).fetchone()
             if not reset:
                 return self.send_json({"error": "Reset link is invalid or already used."}, HTTPStatus.BAD_REQUEST)
             conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (password_hash(password), reset["user_id"]))
-            conn.execute("UPDATE password_resets SET used = 1 WHERE token = ?", (token,))
+            conn.execute("UPDATE password_resets SET used = 1 WHERE token = ?", (reset["token"],))
             user = conn.execute("SELECT * FROM users WHERE id = ?", (reset["user_id"],)).fetchone()
         return self.create_session(user["email"])
 
@@ -315,11 +357,71 @@ class Handler(BaseHTTPRequestHandler):
         with db() as conn:
             conn.execute("UPDATE users SET subscribed = 1, subscription_price = 15 WHERE id = ?", (user["id"],))
             conn.execute(
-                "INSERT INTO payments (user_id, plan_name, amount, currency, billing_name, billing_email, card_last4, method, reference, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (user["id"], "Full sourcing monthly", 15, "GBP", payer_name, payer_email, reference[-4:], method, reference[-32:], "active"),
+                "INSERT INTO payments (user_id, plan_name, amount, currency, billing_name, billing_email, card_last4, method, reference, recipient_name, recipient_bank, recipient_account, recipient_sort_code, billing_cycle, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (user["id"], "Full sourcing monthly", 15, "GBP", payer_name, payer_email, reference[-4:], method, reference[-32:], PAYMENT_ACCOUNT_NAME, PAYMENT_BANK_NAME, PAYMENT_ACCOUNT_NUMBER, PAYMENT_SORT_CODE, "monthly", "active"),
             )
             updated = conn.execute("SELECT * FROM users WHERE id = ?", (user["id"],)).fetchone()
-        return self.send_json({"user": self.user_payload(updated), "message": "Payment method linked to your account. Full sourcing unlocked at £15/month."})
+        return self.send_json({"user": self.user_payload(updated), "message": f"Monthly payment record linked to {PAYMENT_ACCOUNT_NAME}. Full sourcing unlocked at £15/month."})
+
+    def ads_settings(self):
+        user = self.current_user_row()
+        if not user:
+            return self.send_json({"error": "Sign in before viewing ad settings."}, HTTPStatus.UNAUTHORIZED)
+        with db() as conn:
+            settings = conn.execute(
+                "SELECT * FROM ad_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+                (user["id"],),
+            ).fetchone()
+        return self.send_json({"ads": self.ads_payload(settings)})
+
+    def save_ads_settings(self, data):
+        user = self.current_user_row()
+        if not user:
+            return self.send_json({"error": "Sign in before saving ad settings."}, HTTPStatus.UNAUTHORIZED)
+        publisher_id = (data.get("publisherId") or "").strip()
+        ad_slot = (data.get("adSlot") or "").strip()
+        try:
+            monthly_page_views = max(0, int(data.get("monthlyPageViews") or 0))
+            estimated_rpm = max(0, float(data.get("estimatedRpm") or 0))
+        except (TypeError, ValueError):
+            return self.send_json({"error": "Enter valid page views and RPM."}, HTTPStatus.BAD_REQUEST)
+        active = 1 if data.get("active") else 0
+        with db() as conn:
+            existing = conn.execute("SELECT id FROM ad_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user["id"],)).fetchone()
+            if existing:
+                conn.execute(
+                    "UPDATE ad_settings SET publisher_id = ?, ad_slot = ?, monthly_page_views = ?, estimated_rpm = ?, active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (publisher_id, ad_slot, monthly_page_views, estimated_rpm, active, existing["id"]),
+                )
+            else:
+                conn.execute(
+                    "INSERT INTO ad_settings (user_id, publisher_id, ad_slot, monthly_page_views, estimated_rpm, active) VALUES (?, ?, ?, ?, ?, ?)",
+                    (user["id"], publisher_id, ad_slot, monthly_page_views, estimated_rpm, active),
+                )
+            settings = conn.execute("SELECT * FROM ad_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user["id"],)).fetchone()
+        return self.send_json({"ads": self.ads_payload(settings), "message": "Google Ads earning setup saved."})
+
+    def ads_payload(self, row):
+        if not row:
+            return {
+                "provider": "Google AdSense",
+                "publisherId": "",
+                "adSlot": "",
+                "monthlyPageViews": 0,
+                "estimatedRpm": 3.0,
+                "active": False,
+                "estimatedMonthlyRevenue": 0,
+            }
+        revenue = (row["monthly_page_views"] / 1000) * row["estimated_rpm"]
+        return {
+            "provider": row["provider"],
+            "publisherId": row["publisher_id"],
+            "adSlot": row["ad_slot"],
+            "monthlyPageViews": row["monthly_page_views"],
+            "estimatedRpm": row["estimated_rpm"],
+            "active": bool(row["active"]),
+            "estimatedMonthlyRevenue": round(revenue, 2),
+        }
 
     def update_profile(self, data):
         user = self.current_user_row()
@@ -433,7 +535,7 @@ class Handler(BaseHTTPRequestHandler):
         profile = SOURCERS[row["sourcer_index"]]
         with db() as conn:
             payment = conn.execute(
-                "SELECT method, reference, status FROM payments WHERE user_id = ? AND status = 'active' ORDER BY id DESC LIMIT 1",
+                "SELECT method, reference, recipient_name, recipient_bank, recipient_account, recipient_sort_code, billing_cycle, status FROM payments WHERE user_id = ? AND status = 'active' ORDER BY id DESC LIMIT 1",
                 (row["id"],),
             ).fetchone()
         return {
@@ -449,6 +551,11 @@ class Handler(BaseHTTPRequestHandler):
             "subscriptionPrice": row["subscription_price"],
             "paymentMethod": payment["method"] if payment else None,
             "paymentReference": payment["reference"] if payment else None,
+            "paymentRecipient": payment["recipient_name"] if payment else PAYMENT_ACCOUNT_NAME,
+            "paymentBank": payment["recipient_bank"] if payment else PAYMENT_BANK_NAME,
+            "paymentAccountNumber": payment["recipient_account"] if payment else PAYMENT_ACCOUNT_NUMBER,
+            "paymentSortCode": payment["recipient_sort_code"] if payment else PAYMENT_SORT_CODE,
+            "billingCycle": payment["billing_cycle"] if payment else "monthly",
             "profile": profile
         }
 

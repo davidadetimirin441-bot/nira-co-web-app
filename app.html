@@ -29,6 +29,12 @@
     .portal-hero { min-height:245px; border-radius:8px; padding:28px; color:white; display:grid; align-content:end; gap:16px; background:linear-gradient(90deg,rgba(21,17,39,.88),rgba(72,35,107,.72),rgba(12,122,99,.34)),url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=80"); background-size:cover; background-position:center; box-shadow:0 18px 44px rgba(21,17,39,.24); }
     .portal-hero h2 { font-size:34px; margin:0; max-width:720px; }
     .portal-hero p { color:#f4edf9; max-width:720px; margin:0; }
+    .search-hero { border-radius:8px; padding:24px; color:white; background:linear-gradient(135deg,var(--violet),var(--green)); box-shadow:0 18px 44px rgba(21,17,39,.18); }
+    .search-hero h2 { font-size:30px; margin:0 0 8px; }
+    .search-hero p { color:#f7f0ff; margin:0 0 14px; }
+    .big-search { display:grid; grid-template-columns:1fr auto; gap:10px; background:white; border-radius:8px; padding:8px; }
+    .big-search input { min-height:58px; border:0; font-size:18px; }
+    .big-search button { min-height:58px; padding:0 24px; }
     .quick-tabs { display:flex; flex-wrap:wrap; gap:8px; }
     .quick-tabs span { background:white; color:var(--violet); border-radius:999px; padding:8px 12px; font-weight:900; font-size:12px; }
     .card, .deal, .tools, .chat-box { background:white; border:1px solid var(--line); border-radius:8px; padding:16px; box-shadow:0 12px 28px rgba(38,25,56,.08); }
@@ -48,7 +54,7 @@
     .price strong { display:block; font-size:24px; color:var(--violet); }
     .pill { display:inline-flex; margin:3px 5px 0 0; padding:5px 8px; border-radius:999px; background:#ede3f8; color:var(--violet); font-size:11px; font-weight:900; }
     .pill.warn { background:#f9ecd6; color:var(--amber); } .pill.blue { background:#dcebf4; color:var(--blue); }
-    .profile-grid, .pipeline-grid, .account-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .profile-grid, .pipeline-grid, .account-grid, .ads-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
     .profile-card { background:white; border:1px solid var(--line); border-radius:8px; padding:16px; }
     .stage { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }
     .stage strong { font-size:16px; } .count { width:34px; height:34px; border-radius:8px; display:grid; place-items:center; background:var(--green); color:white; font-weight:900; }
@@ -61,14 +67,18 @@
     .show-password { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
     .show-password input, .check-row input { width:auto; min-height:auto; }
     .check-row { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
+    .bank-box { margin:14px 0; padding:12px; border-radius:8px; background:#f7f0ff; border:1px solid #e2d9ec; }
+    .bank-box strong { display:block; color:var(--violet); margin-bottom:4px; }
+    .ad-preview { min-height:120px; display:grid; place-items:center; border:2px dashed #cdbbdf; border-radius:8px; background:#fbf8ff; color:var(--muted); text-align:center; padding:16px; }
+    .money-total { font-size:42px; color:var(--violet); font-weight:900; margin:6px 0; }
     .auth-link { margin-top:12px; width:100%; min-height:38px; background:transparent; color:var(--green); font-weight:900; text-decoration:underline; }
-    @media (max-width:950px){ .app{grid-template-columns:1fr}.workspace,.stats,.subscription,.profile-grid,.pipeline-grid,.account-grid,.deals{grid-template-columns:1fr} aside{position:static}.filters{grid-template-columns:1fr}.tools{position:static}.portal-hero{min-height:220px;padding:22px}.portal-hero h2{font-size:28px}.chat-form{grid-template-columns:1fr}.auth{padding:10px}.panel{max-height:calc(100vh - 20px);padding:18px} }
+    @media (max-width:950px){ .app{grid-template-columns:1fr}.workspace,.stats,.subscription,.profile-grid,.pipeline-grid,.account-grid,.ads-grid,.deals,.big-search{grid-template-columns:1fr} aside{position:static}.filters{grid-template-columns:1fr}.tools{position:static}.portal-hero{min-height:220px;padding:22px}.portal-hero h2,.search-hero h2{font-size:28px}.chat-form{grid-template-columns:1fr}.auth{padding:10px}.panel{max-height:calc(100vh - 20px);padding:18px} }
   </style>
 </head>
 <body>
   <section class="auth" id="auth">
     <div class="panel">
-      <div class="brand"><img src="/assets/nira-co-building-logo.png" alt=""> NIRA &amp; CO Global source</div>
+      <div class="brand"><img src="/assets/nira-co-building-logo.png" alt=""> NIRA &amp; CO UK source</div>
       <h1 id="authTitle">Sign in</h1>
       <p>Use your account before entering the deal-sourcing workspace at niraandco.co.uk.</p>
       <div class="tabs"><button class="active" id="signinTab">Sign in</button><button id="signupTab">Sign up</button></div>
@@ -90,6 +100,7 @@
         <button class="nav-btn" data-view="profiles">Profiles</button>
         <button class="nav-btn" data-view="pipeline">Pipeline</button>
         <button class="nav-btn" data-view="subscription">Subscription</button>
+        <button class="nav-btn" data-view="ads">Ad earnings</button>
         <button class="nav-btn" data-view="chat">Team chat</button>
       </nav>
     </aside>
@@ -97,14 +108,15 @@
       <div class="top"><div><h1 id="pageTitle">Dashboard</h1><p id="brief">Loading workspace...</p></div><button class="ghost" id="signout">Sign out</button></div>
       <div class="content">
         <section class="view" id="dashboardView">
+          <section class="search-hero"><h2>Search England, Scotland and Wales property deals</h2><p>Find HMO, buy-to-let, auction, flip and short-let sourcing opportunities across England, Scotland and Wales.</p><div class="big-search"><input id="dashboardSearch" placeholder="Search Cardiff, Glasgow, Coventry, Birmingham, HMO or auction"><button class="primary" id="dashboardSearchBtn">Search</button></div></section>
           <div class="stats"><div class="card"><span>Qualified deals</span><strong id="dealCount">0</strong></div><div class="card"><span>Average yield</span><strong id="avgYield">0%</strong></div><div class="card"><span>Average discount</span><strong id="avgDiscount">0%</strong></div><div class="card"><span>Subscription</span><strong id="subStatus">Free</strong></div></div>
           <section class="workspace"><div class="deals" id="featuredDeals"></div><div class="card profile" id="profile"></div></section>
         </section>
 
         <section class="view" id="dealsView" hidden>
           <section class="portal-hero">
-            <div class="quick-tabs"><span>Buy-to-let</span><span>HMO</span><span>Flip</span><span>Short let</span><span>Global deals</span></div>
-            <div><h2>Search investment properties, compare yields, and unlock verified sourcing packs.</h2><p>Browse opportunities by city, strategy, source and deal sourcer. Free users see previews; paid members unlock the full property details and links.</p></div>
+            <div class="quick-tabs"><span>Buy-to-let</span><span>HMO</span><span>Flip</span><span>Short let</span><span>UK deals</span></div>
+            <div><h2>Search England, Scotland and Wales investment properties.</h2><p>Browse opportunities by country, city, strategy, source and deal sourcer. Free users see previews; paid members unlock the full property details and links.</p></div>
           </section>
           <section class="tools"><h2>Find a property deal</h2><div class="filters"><input id="search" placeholder="Search by postcode, city, HMO, source or sourcer"><select id="region"><option>All</option></select><select id="strategy"><option>All</option></select><select id="source"><option>All</option></select></div></section>
           <div class="deals" id="deals"></div>
@@ -113,7 +125,7 @@
         <section class="view" id="profilesView" hidden>
           <div class="account-grid">
             <div class="card"><h2>My user details</h2><p>Keep each sourcer or investor profile complete for newsletters, deal matching and account support.</p><form id="profileForm"><input id="profileName" placeholder="Full name" required><input id="profilePhone" placeholder="Phone number"><input id="profileCompany" placeholder="Company or team name"><input id="profileCity" placeholder="City / main market"><select id="profileInvestorType"><option value="">Investor type</option><option>Deal sourcer</option><option>Investor</option><option>Landlord</option><option>Agent</option><option>Developer</option></select><label class="check-row"><input id="profileNewsletter" type="checkbox"> Receive weekly deal newsletters</label><button class="primary">Save details</button></form></div>
-            <div class="card"><h2>Weekly deal newsletter</h2><p>Prepare a weekly email showing the best available HMO, BTL, flip, auction, off-market and global deals for all opted-in users.</p><span class="pill">Every week</span><span class="pill blue">Uses email outbox</span><span class="pill warn">SMTP sends live email</span><br><br><button class="primary" id="sendNewsletterBtn">Prepare weekly newsletter</button><p id="newsletterNote"></p></div>
+            <div class="card"><h2>Weekly deal newsletter</h2><p>Prepare a weekly email showing the best available UK HMO, BTL, flip, auction, off-market and short-let deals for all opted-in users.</p><span class="pill">Every week</span><span class="pill blue">Uses email outbox</span><span class="pill warn">SMTP sends live email</span><br><br><button class="primary" id="sendNewsletterBtn">Prepare weekly newsletter</button><p id="newsletterNote"></p></div>
           </div>
           <div class="profile-grid" id="profiles"></div>
         </section>
@@ -122,9 +134,9 @@
 
         <section class="view" id="subscriptionView" hidden>
           <div class="subscription">
-            <div class="card"><h2>Unlock full sourcing access</h2><p>Free users can preview a few opportunities. Paid members unlock all HMO, BTL, flip, auction, off-market, developer and short-let deals, plus team chat access.</p><p>You can connect your UK bank through a payment provider such as Stripe, GoCardless/Open Banking or Airtim. Website visits alone do not pay you unless you add ads, affiliate links, sponsored listings or paid subscriptions.</p><span class="pill">Monthly access</span><span class="pill blue">Cancel anytime</span><span class="pill warn">Prototype checkout</span></div>
+            <div class="card"><h2>Unlock full sourcing access</h2><p>Free users can preview a few opportunities. Paid members unlock all HMO, BTL, flip, auction, off-market, developer and short-let deals, plus team chat access.</p><div class="bank-box"><strong>Bank transfer details</strong><p>Account name: David Adetimirin<br>Bank: Monzo<br>Account number: 95188636<br>Sort code: 04-00-03</p></div><p>After paying, enter the bank, Airtim or card reference in the subscription form. For launch, connect these details through a payment provider such as Stripe, GoCardless/Open Banking or Airtim.</p><p>Website visits alone do not pay you unless you add ads, affiliate links, sponsored listings or paid subscriptions.</p><span class="pill">Monthly access</span><span class="pill blue">Cancel anytime</span><span class="pill warn">Prototype checkout</span></div>
             <div class="price-card">
-              <span>Full sourcing</span><strong>£15</strong><p>per person / month</p>
+              <span>Monthly full sourcing</span><strong>£15</strong><p>per person / month</p>
               <form id="paymentForm">
                 <input id="payerName" placeholder="Account holder / payer name" required>
                 <input id="payerEmail" type="email" placeholder="Billing email" required>
@@ -133,10 +145,34 @@
                   <option value="uk_bank">My UK business bank / Open Banking</option>
                   <option value="airtim">Airtim payment reference</option>
                 </select>
-                <input id="paymentReference" placeholder="Card last 4, bank reference, or Airtim reference" required>
+                <input id="paymentReference" placeholder="Reference for David Adetimirin payment" required>
                 <button class="primary" id="subscribeBtn">Link payment and subscribe</button>
               </form>
-              <p>Prototype checkout: for launch, connect Stripe, GoCardless/Open Banking, or your Airtim payment provider.</p>
+              <p>Prototype checkout: payment records are saved against David Adetimirin, Monzo, account 95188636, sort code 04-00-03. For launch, connect Stripe, GoCardless/Open Banking, or your Airtim payment provider.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="adsView" hidden>
+          <div class="ads-grid">
+            <div class="card">
+              <h2>Google Ads earning setup</h2>
+              <p>Add your Google AdSense publisher ID and ad slot after Google approves niraandco.co.uk. This app stores the setup and estimates possible monthly income from traffic.</p>
+              <form id="adsForm">
+                <input id="adsPublisher" placeholder="AdSense publisher ID, for example ca-pub-1234567890">
+                <input id="adsSlot" placeholder="Ad slot ID">
+                <input id="adsViews" type="number" min="0" step="100" placeholder="Estimated monthly page views">
+                <input id="adsRpm" type="number" min="0" step="0.1" placeholder="Estimated RPM, for example 3.00">
+                <label class="check-row"><input id="adsActive" type="checkbox"> Mark Google ads as active</label>
+                <button class="primary">Save ad setup</button>
+              </form>
+            </div>
+            <div class="card">
+              <h2>Estimated ad income</h2>
+              <div class="money-total" id="adsRevenue">£0</div>
+              <p id="adsStatus">Google Ads is not active yet.</p>
+              <div class="ad-preview"><div><strong>NIRA & CO ad space</strong><br>Google AdSense code will display here after approval and live setup.</div></div>
+              <p>Formula: monthly page views divided by 1,000, multiplied by RPM. Real earnings depend on AdSense approval, visitor country, advert demand, clicks and content quality.</p>
             </div>
           </div>
         </section>
@@ -149,10 +185,10 @@
   </div>
   <div class="toast" id="toast"></div>
   <script>
-    let user = null, deals = [], sourcers = [], currentView = "dashboard", fullAccess = false;
+    let user = null, deals = [], sourcers = [], currentView = "dashboard", fullAccess = false, ads = null;
     const $ = (id) => document.getElementById(id);
     const money = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 });
-    const titles = { dashboard:"Dashboard", deals:"Deals", profiles:"Sourcer profiles", pipeline:"Pipeline", subscription:"Subscription", chat:"Team chat" };
+    const titles = { dashboard:"Dashboard", deals:"Deals", profiles:"Sourcer profiles", pipeline:"Pipeline", subscription:"Monthly subscription", ads:"Ad earnings", chat:"Team chat" };
     function toast(message){ $("toast").textContent = message; $("toast").classList.add("show"); setTimeout(() => $("toast").classList.remove("show"), 2200); }
     let resetToken = new URLSearchParams(location.search).get("reset");
     function mode(which){
@@ -196,7 +232,9 @@
     };
     $("signout").onclick = async () => { await api("/api/signout", {}); user = null; $("auth").hidden = false; };
     document.querySelectorAll(".nav-btn").forEach(btn => btn.onclick = () => showView(btn.dataset.view));
-    function showView(name){ currentView = name; document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === name)); document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== `${name}View`); $("pageTitle").textContent = titles[name]; if(name === "chat") loadChat(); render(); }
+    $("dashboardSearchBtn").onclick = () => { $("search").value = $("dashboardSearch").value; showView("deals"); render(); };
+    $("dashboardSearch").addEventListener("keydown", (event) => { if(event.key === "Enter"){ event.preventDefault(); $("dashboardSearchBtn").click(); } });
+    function showView(name){ currentView = name; document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === name)); document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== `${name}View`); $("pageTitle").textContent = titles[name]; if(name === "chat") loadChat(); if(name === "ads") loadAds(); render(); }
     async function boot(){ if(resetToken){ $("auth").hidden = false; mode("reset"); await loadDeals(); return; } if(new URLSearchParams(location.search).get("forgot")){ $("auth").hidden = false; mode("forgot"); await loadDeals(); return; } const session = await api("/api/session"); user = session.user; $("auth").hidden = !!user; await loadDeals(); openSearchFromUrl(); }
     async function loadDeals(){ const data = await api("/api/deals"); deals = data.deals; sourcers = data.sourcers; fullAccess = data.fullAccess; populateFilters(); render(); }
     function populateFilters(){ for (const [id, key] of [["region","region"],["strategy","strategy"],["source","source"]]) { const select = $(id); const value = select.value || "All"; select.innerHTML = "<option>All</option>" + [...new Set(deals.map(d => d[key]))].sort().map(v => `<option>${v}</option>`).join(""); select.value = [...select.options].some(o => o.value === value) ? value : "All"; select.oninput = render; } $("search").oninput = render; }
@@ -204,9 +242,11 @@
     function filtered(){ const q = $("search")?.value.toLowerCase() || ""; return deals.filter(d => (!q || `${d.title} ${d.location} ${d.strategy} ${d.source} ${d.owner}`.toLowerCase().includes(q)) && ($("region").value === "All" || d.region === $("region").value) && ($("strategy").value === "All" || d.strategy === $("strategy").value) && ($("source").value === "All" || d.source === $("source").value)); }
     function accessible(list){ return fullAccess ? list : list.slice(0, 4); }
     function dealCard(d, locked=false){ return `<article class="deal ${locked ? "locked" : ""}"><div class="thumb" style="background-image:url('${d.image}')"></div><div class="deal-body"><h2>${d.title}</h2><p class="deal-meta">${d.location} &middot; ${d.source} &middot; ${d.strategy} &middot; Owner: ${d.owner}</p><span class="pill">${d.yield}% yield</span><span class="pill blue">${d.discount}% discount</span><span class="pill warn">${d.status}</span><div class="deal-actions">${locked ? `<button class="primary" onclick="showView('subscription')">Unlock full listing</button>` : `<a href="${d.link}" target="_blank" rel="noopener">View property link</a>`}<button class="ghost" onclick="showView('chat')">Ask sourcer</button></div></div><div class="price"><strong>${locked ? "&pound;--" : money.format(d.price)}</strong><p>guide price</p></div></article>`; }
-    function render(){ const visible = filtered(); const open = accessible(visible); const avgY = open.reduce((s,d)=>s+d.yield,0)/(open.length || 1); const avgD = open.reduce((s,d)=>s+d.discount,0)/(open.length || 1); $("dealCount").textContent = fullAccess ? visible.length : `${open.length}/${visible.length}`; $("avgYield").textContent = avgY.toFixed(1)+"%"; $("avgDiscount").textContent = Math.round(avgD)+"%"; $("subStatus").textContent = fullAccess ? "Paid" : "Preview"; $("brief").textContent = user ? `${user.name}'s workspace · ${user.profile.role} · ${fullAccess ? "Full paid access" : "Free preview - payment required for full access"}` : "Create or sign into an account to continue."; $("profile").innerHTML = user ? `<h2>${user.name}</h2><p>${user.email}</p><p>${user.phone || "No phone added"} · ${user.city || "No market city added"}</p><span class="pill">${user.profile.market}</span><span class="pill">${user.profile.closeRate}% close rate</span><span class="pill ${fullAccess ? "" : "warn"}">${fullAccess ? "Payment linked" : "No payment - preview only"}</span><span class="pill ${user.newsletter ? "blue" : "warn"}">${user.newsletter ? "Newsletter on" : "Newsletter off"}</span>${user.investorType ? `<span class="pill">${user.investorType}</span>` : ""}${user.paymentMethod ? `<span class="pill blue">${user.paymentMethod}</span>` : ""}${user.profile.tags.map(t=>`<span class="pill">${t}</span>`).join("")}` : "<h2>Sourcer profile</h2><p>Sign in to create your profile.</p>"; $("featuredDeals").innerHTML = open.slice(0,3).map(d => dealCard(d)).join(""); $("deals").innerHTML = visible.map((d,i) => dealCard(d, !fullAccess && i > 3)).join(""); renderProfiles(); renderPipeline(); fillProfileForm(); }
+    function render(){ const visible = filtered(); const open = accessible(visible); const avgY = open.reduce((s,d)=>s+d.yield,0)/(open.length || 1); const avgD = open.reduce((s,d)=>s+d.discount,0)/(open.length || 1); $("dealCount").textContent = fullAccess ? visible.length : `${open.length}/${visible.length}`; $("avgYield").textContent = avgY.toFixed(1)+"%"; $("avgDiscount").textContent = Math.round(avgD)+"%"; $("subStatus").textContent = fullAccess ? "Paid" : "Preview"; $("brief").textContent = user ? `${user.name}'s workspace · ${user.profile.role} · ${fullAccess ? "Full paid access" : "Free preview - payment required for full access"}` : "Create or sign into an account to continue."; $("profile").innerHTML = user ? `<h2>${user.name}</h2><p>${user.email}</p><p>${user.phone || "No phone added"} · ${user.city || "No market city added"}</p><span class="pill">${user.profile.market}</span><span class="pill">${user.profile.closeRate}% close rate</span><span class="pill ${fullAccess ? "" : "warn"}">${fullAccess ? "Payment linked" : "No payment - preview only"}</span><span class="pill ${user.newsletter ? "blue" : "warn"}">${user.newsletter ? "Newsletter on" : "Newsletter off"}</span>${user.investorType ? `<span class="pill">${user.investorType}</span>` : ""}${user.paymentMethod ? `<span class="pill blue">${user.paymentMethod}</span>` : ""}${user.paymentRecipient ? `<span class="pill">To ${user.paymentRecipient}</span>` : ""}${user.paymentBank ? `<span class="pill">${user.paymentBank}</span>` : ""}${user.profile.tags.map(t=>`<span class="pill">${t}</span>`).join("")}` : "<h2>Sourcer profile</h2><p>Sign in to create your profile.</p>"; $("featuredDeals").innerHTML = open.slice(0,3).map(d => dealCard(d)).join(""); $("deals").innerHTML = visible.map((d,i) => dealCard(d, !fullAccess && i > 3)).join(""); renderProfiles(); renderPipeline(); fillProfileForm(); }
     function renderProfiles(){ $("profiles").innerHTML = sourcers.map(s => `<article class="profile-card"><h2>${s.name}</h2><p>${s.role}</p><span class="pill">${s.market}</span><span class="pill blue">${s.closeRate}% close rate</span><span class="pill warn">${s.saved} saved leads</span>${s.tags.map(t=>`<span class="pill">${t}</span>`).join("")}</article>`).join(""); }
     function fillProfileForm(){ if(!user) return; $("profileName").value = user.name || ""; $("profilePhone").value = user.phone || ""; $("profileCompany").value = user.company || ""; $("profileCity").value = user.city || ""; $("profileInvestorType").value = user.investorType || ""; $("profileNewsletter").checked = !!user.newsletter; }
+    function fillAdsForm(){ if(!ads) return; $("adsPublisher").value = ads.publisherId || ""; $("adsSlot").value = ads.adSlot || ""; $("adsViews").value = ads.monthlyPageViews || ""; $("adsRpm").value = ads.estimatedRpm || ""; $("adsActive").checked = !!ads.active; $("adsRevenue").textContent = money.format(ads.estimatedMonthlyRevenue || 0); $("adsStatus").textContent = ads.active ? `Google Ads active: ${ads.publisherId || "publisher ID pending"} / ${ads.adSlot || "slot pending"}` : "Google Ads is not active yet."; }
+    async function loadAds(){ try { const data = await api("/api/ads"); ads = data.ads; fillAdsForm(); } catch(err){ toast(err.message); } }
     function renderPipeline(){ const stages = [{name:"New leads", detail:"Fresh submissions and imports", count:deals.length}, {name:"Comparable check", detail:"Pricing, rent and local demand", count:Math.round(deals.length*.65)}, {name:"Investor pack", detail:"Numbers, photos, risks and exit", count:Math.round(deals.length*.38)}, {name:"Offer submitted", detail:"Active negotiation", count:Math.round(deals.length*.22)}]; $("pipeline").innerHTML = stages.map(s => `<article class="card stage"><div><strong>${s.name}</strong><p>${s.detail}</p></div><div class="count">${s.count}</div></article>`).join(""); }
     $("profileForm").onsubmit = async (event) => {
       event.preventDefault();
@@ -222,6 +262,15 @@
         const data = await api("/api/newsletter/send", {});
         $("newsletterNote").textContent = `${data.message} Sent: ${data.sent}. Saved to outbox: ${data.outbox}.`;
         toast("Weekly newsletter prepared");
+      } catch(err){ toast(err.message); }
+    };
+    $("adsForm").onsubmit = async (event) => {
+      event.preventDefault();
+      try {
+        const data = await api("/api/ads", { publisherId: $("adsPublisher").value, adSlot: $("adsSlot").value, monthlyPageViews: $("adsViews").value, estimatedRpm: $("adsRpm").value, active: $("adsActive").checked });
+        ads = data.ads;
+        fillAdsForm();
+        toast(data.message);
       } catch(err){ toast(err.message); }
     };
     $("paymentForm").onsubmit = async (event) => {
