@@ -21,5 +21,8 @@ Production upgrades before real users:
 - Replace SQLite with hosted Postgres.
 - Add Google/Apple/Microsoft OAuth.
 - Add a licensed property-feed API.
+- Connect Stripe or another payment processor for real £15/month billing.
+- Connect a production AI provider for live assistant responses.
+- Connect SMTP, SendGrid, Mailgun, Postmark, or another email service for real reset-email delivery.
 - Add password reset and email verification.
 - Add backups, monitoring, and terms/privacy pages.
