@@ -196,8 +196,9 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(path.read_bytes())
 
-
 if __name__ == "__main__":
     init_db()
+    HOST = "0.0.0.0"
+    PORT = int(os.environ.get("PORT", "8088"))
     print(f"NIRA & CO running at http://{HOST}:{PORT}")
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()
