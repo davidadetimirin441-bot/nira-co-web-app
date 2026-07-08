@@ -80,12 +80,12 @@
     <div class="panel">
       <div class="brand"><img src="/assets/nira-co-building-logo.png" alt=""> NIRA &amp; CO UK source</div>
       <h1 id="authTitle">Sign in</h1>
-      <p>Use your account before entering the deal-sourcing workspace at niraandco.co.uk.</p>
+      <p>Sign up once, then use the same email and password to sign in any time.</p>
       <div class="tabs"><button class="active" id="signinTab">Sign in</button><button id="signupTab">Sign up</button></div>
-      <form id="signinForm"><input id="signinEmail" type="email" placeholder="Email" required><input id="signinPassword" class="password-input" type="password" placeholder="Password" required><label class="show-password"><input type="checkbox" data-toggle-password="signinPassword"> Show password</label><button class="primary">Sign in</button></form>
-      <form id="signupForm" hidden><input id="signupName" placeholder="Full name" required><input id="signupEmail" type="email" placeholder="Email" required><input id="signupPhone" placeholder="Phone number"><input id="signupCompany" placeholder="Company or team name"><input id="signupCity" placeholder="City / main market"><select id="signupInvestorType"><option value="">Investor type</option><option>Deal sourcer</option><option>Investor</option><option>Landlord</option><option>Agent</option><option>Developer</option></select><input id="signupPassword" class="password-input" type="password" minlength="6" placeholder="Create password" required><label class="show-password"><input type="checkbox" data-toggle-password="signupPassword"> Show password</label><label class="check-row"><input id="signupNewsletter" type="checkbox" checked> Send me weekly deal newsletters</label><button class="primary">Create account</button></form>
-      <form id="forgotForm" hidden><input id="forgotEmail" type="email" placeholder="Account email" required><button class="primary">Generate password reset link</button><p id="resetLinkNote"></p></form>
-      <form id="resetForm" hidden><input id="resetPassword" class="password-input" type="password" minlength="6" placeholder="New password" required><label class="show-password"><input type="checkbox" data-toggle-password="resetPassword"> Show password</label><button class="primary">Update password</button></form>
+      <form id="signinForm" autocomplete="on"><input id="signinEmail" name="email" type="email" placeholder="Email" autocomplete="username" required><input id="signinPassword" name="password" class="password-input" type="password" placeholder="Password" autocomplete="current-password" required><label class="show-password"><input type="checkbox" data-toggle-password="signinPassword"> Show password</label><button class="primary">Sign in</button></form>
+      <form id="signupForm" hidden autocomplete="on"><input id="signupName" name="name" placeholder="Full name" autocomplete="name" required><input id="signupEmail" name="email" type="email" placeholder="Email" autocomplete="username" required><input id="signupPhone" name="tel" placeholder="Phone number" autocomplete="tel"><input id="signupCompany" name="organization" placeholder="Company or team name" autocomplete="organization"><input id="signupCity" name="address-level2" placeholder="City / main market" autocomplete="address-level2"><select id="signupInvestorType"><option value="">Investor type</option><option>Deal sourcer</option><option>Investor</option><option>Landlord</option><option>Agent</option><option>Developer</option></select><input id="signupPassword" name="new-password" class="password-input" type="password" minlength="6" placeholder="Create password" autocomplete="new-password" required><label class="show-password"><input type="checkbox" data-toggle-password="signupPassword"> Show password</label><label class="check-row"><input id="signupNewsletter" type="checkbox" checked> Send me weekly deal newsletters</label><button class="primary">Create account</button></form>
+      <form id="forgotForm" hidden><input id="forgotEmail" name="email" type="email" placeholder="Account email" autocomplete="username" required><button class="primary">Generate password reset link</button><p id="resetLinkNote"></p></form>
+      <form id="resetForm" hidden autocomplete="on"><input id="resetPassword" name="new-password" class="password-input" type="password" minlength="6" placeholder="New password" autocomplete="new-password" required><label class="show-password"><input type="checkbox" data-toggle-password="resetPassword"> Show password</label><button class="primary">Update password</button></form>
       <button class="auth-link" id="forgotBtn" type="button">Forgot password? Send reset link</button>
     </div>
   </section>
@@ -206,8 +206,9 @@
       });
     });
     async function api(path, body){ const res = await fetch(path, { method: body ? "POST" : "GET", headers: {"Content-Type":"application/json"}, body: body && JSON.stringify(body) }); const data = await res.json(); if(!res.ok) throw new Error(data.error || "Something went wrong"); return data; }
-    $("signupForm").onsubmit = async (e) => { e.preventDefault(); try { const data = await api("/api/signup", { name: $("signupName").value, email: $("signupEmail").value, phone: $("signupPhone").value, company: $("signupCompany").value, city: $("signupCity").value, investorType: $("signupInvestorType").value, newsletter: $("signupNewsletter").checked, password: $("signupPassword").value }); user = data.user; $("auth").hidden = true; await loadDeals(); } catch(err){ toast(err.message); } };
-    $("signinForm").onsubmit = async (e) => { e.preventDefault(); try { const data = await api("/api/signin", { email: $("signinEmail").value, password: $("signinPassword").value }); user = data.user; $("auth").hidden = true; await loadDeals(); } catch(err){ toast(err.message); } };
+    const savedEmail = localStorage.getItem("nira_email"); if(savedEmail) $("signinEmail").value = savedEmail;
+    $("signupForm").onsubmit = async (e) => { e.preventDefault(); try { const data = await api("/api/signup", { name: $("signupName").value, email: $("signupEmail").value, phone: $("signupPhone").value, company: $("signupCompany").value, city: $("signupCity").value, investorType: $("signupInvestorType").value, newsletter: $("signupNewsletter").checked, password: $("signupPassword").value }); user = data.user; localStorage.setItem("nira_email", user.email); $("auth").hidden = true; await loadDeals(); } catch(err){ toast(err.message); } };
+    $("signinForm").onsubmit = async (e) => { e.preventDefault(); try { const data = await api("/api/signin", { email: $("signinEmail").value, password: $("signinPassword").value }); user = data.user; localStorage.setItem("nira_email", user.email); $("auth").hidden = true; await loadDeals(); } catch(err){ toast(err.message); } };
     $("forgotBtn").onclick = () => mode("forgot");
     $("forgotForm").onsubmit = async (e) => {
       e.preventDefault();
@@ -230,7 +231,7 @@
         toast("Password updated");
       } catch(err){ toast(err.message); }
     };
-    $("signout").onclick = async () => { await api("/api/signout", {}); user = null; $("auth").hidden = false; };
+    $("signout").onclick = async () => { await api("/api/signout", {}); user = null; mode("in"); $("auth").hidden = false; };
     document.querySelectorAll(".nav-btn").forEach(btn => btn.onclick = () => showView(btn.dataset.view));
     $("dashboardSearchBtn").onclick = () => { $("search").value = $("dashboardSearch").value; showView("deals"); render(); };
     $("dashboardSearch").addEventListener("keydown", (event) => { if(event.key === "Enter"){ event.preventDefault(); $("dashboardSearchBtn").click(); } });

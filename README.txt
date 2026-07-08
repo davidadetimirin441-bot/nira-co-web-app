@@ -12,7 +12,7 @@ What this version includes:
 - Python backend using only built-in libraries
 - SQLite database stored as ratada.sqlite3
 - Sign up and sign in with hashed passwords
-- Session cookie login
+- Long-life login cookie so users stay signed in unless they sign out or clear browser data
 - User sourcer profiles
 - User details for phone, company, city/main market, investor type, and newsletter opt-in
 - UK-only deal API across England, Scotland and Wales with real listing links and property photos

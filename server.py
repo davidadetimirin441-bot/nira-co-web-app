@@ -17,6 +17,7 @@ DB_PATH = ROOT / "ratada.sqlite3"
 ASSETS = ROOT / "assets"
 HOST = os.environ.get("HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT") or os.environ.get("RATADA_PORT", "8088"))
+SESSION_MAX_AGE = 60 * 60 * 24 * 365 * 20
 PAYMENT_ACCOUNT_NAME = "David Adetimirin"
 PAYMENT_BANK_NAME = "Monzo"
 PAYMENT_ACCOUNT_NUMBER = "95188636"
@@ -59,7 +60,7 @@ CHAT_MESSAGES = [
 
 
 def db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=10)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -276,7 +277,14 @@ class Handler(BaseHTTPRequestHandler):
                     (name, email, password_hash(password), "Email", sourcer_index(email), phone, company, city, investor_type, newsletter),
                 )
         except sqlite3.IntegrityError:
-            return self.send_json({"error": "Account already exists. Sign in instead."}, HTTPStatus.CONFLICT)
+            existing_matches = False
+            with db() as conn:
+                existing = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+                if existing and verify_password(password, existing["password_hash"]):
+                    existing_matches = True
+            if existing_matches:
+                return self.create_session(email)
+            return self.send_json({"error": "Account already exists. Use Sign in with the same email and password, or use Forgot password."}, HTTPStatus.CONFLICT)
         return self.create_session(email)
 
     def signin(self, data):
@@ -511,7 +519,7 @@ class Handler(BaseHTTPRequestHandler):
             user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
             conn.execute("INSERT INTO sessions (token, user_id) VALUES (?, ?)", (token, user["id"]))
         self.send_response(HTTPStatus.OK)
-        self.send_header("Set-Cookie", f"ratada_session={token}; Path=/; HttpOnly; SameSite=Lax")
+        self.send_header("Set-Cookie", f"ratada_session={token}; Path=/; Max-Age={SESSION_MAX_AGE}; HttpOnly; SameSite=Lax")
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.wfile.write(json.dumps({"user": self.user_payload(user)}).encode())
