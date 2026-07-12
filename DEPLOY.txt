@@ -19,28 +19,32 @@ App stores later:
 
 Production upgrades before real users:
 - Replace SQLite with hosted Postgres.
-- Keep APP_SECRET private so password reset token hashes cannot be recreated by end users.
+- Keep SECRET_KEY private so password reset and verification token hashes cannot be recreated by end users.
 - Add Google/Apple/Microsoft OAuth.
 - Add a licensed property-feed API.
 - Connect Stripe or another payment processor for real £15/month billing.
 - Connect Airtim and UK bank/Open Banking providers before accepting real payments.
 - Add your own business bank account through the payment provider dashboard so subscription money pays out to you.
-- Current bank-transfer display details: David Adetimirin, Monzo, account 95188636, sort code 04-00-03.
+- Manual bank-transfer details have been removed. Use Stripe Checkout and Stripe payouts for production subscriptions.
 - For money from traffic, add a real ad network, affiliate programme, sponsored listing model, or lead fee model. Visits by themselves do not create income.
 - For Google Ads/AdSense, get niraandco.co.uk approved by Google, then add the publisher ID and ad slot in the Ad earnings page.
 - Connect a production AI provider for live assistant responses.
 - Connect SMTP, SendGrid, Mailgun, Postmark, or another email service for real reset-email delivery.
 - Use the in-app newsletter tool weekly, or automate POST /api/newsletter/send from your hosting provider once authentication/admin controls are added.
+- Set ADMIN_EMAILS to a comma-separated list of trusted admin account emails. Do not grant admin access through the browser.
 - Password reset links open the dedicated /reset?token=... page.
-- Set APP_BASE_URL to your live website, https://niraandco.co.uk, so password reset links generate automatically with the correct domain.
+- Set BASE_URL to your live website, https://nireco.co.uk, so password reset and verification links generate automatically with the correct domain.
 
 SMTP variables for password reset emails:
-- APP_BASE_URL
+- BASE_URL
+- SECRET_KEY
+- COOKIE_SECURE
+- ADMIN_EMAILS
 - SMTP_HOST
 - SMTP_PORT
-- SMTP_FROM
-- SMTP_USER
+- FROM_EMAIL
+- SMTP_USERNAME
 - SMTP_PASSWORD
 - SMTP_TLS
-- Add password reset and email verification.
+- Password reset and email verification are part of Stage 1.
 - Add backups, monitoring, and terms/privacy pages.

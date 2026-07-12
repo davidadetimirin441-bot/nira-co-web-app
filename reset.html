@@ -38,6 +38,12 @@
   <script>
     const token = new URLSearchParams(location.search).get("token");
     const message = document.getElementById("message");
+    let csrfToken = "";
+    async function loadCsrf(){
+      const response = await fetch("/api/csrf");
+      const data = await response.json();
+      csrfToken = data.csrfToken;
+    }
     document.getElementById("showPassword").addEventListener("change", (event) => {
       document.getElementById("password").type = event.target.checked ? "text" : "password";
     });
@@ -52,8 +58,8 @@
       }
       const response = await fetch("/api/password-reset/confirm", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password: document.getElementById("password").value })
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+        body: JSON.stringify({ token, password: document.getElementById("password").value, csrfToken })
       });
       const data = await response.json();
       if (!response.ok) {
@@ -64,6 +70,7 @@
       message.innerHTML = 'Password updated. <a href="/app">Open the app</a>';
       setTimeout(() => location.href = "/app", 1200);
     });
+    loadCsrf();
   </script>
 </body>
 </html>
