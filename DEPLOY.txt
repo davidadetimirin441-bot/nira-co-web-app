@@ -47,4 +47,5 @@ SMTP variables for password reset emails:
 - SMTP_PASSWORD
 - SMTP_TLS
 - Password reset and email verification are part of Stage 1.
+- For local testing, copy .env.example to .env, set BASE_URL=http://127.0.0.1:8088, set COOKIE_SECURE=0, add SMTP credentials, then restart the app.
 - Add backups, monitoring, and terms/privacy pages.

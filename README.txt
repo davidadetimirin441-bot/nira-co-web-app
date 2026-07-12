@@ -54,3 +54,9 @@ SMTP variables for real reset emails:
 - SMTP_USERNAME
 - SMTP_PASSWORD
 - SMTP_TLS
+
+Email verification troubleshooting:
+- Copy .env.example to .env and fill in SMTP settings.
+- Restart the app after changing .env.
+- If SMTP is not configured, verification/reset messages are saved to the email_outbox table.
+- Run python show_outbox.py from this folder to view the latest locally saved emails.

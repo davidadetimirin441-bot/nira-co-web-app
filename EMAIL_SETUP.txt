@@ -1,0 +1,33 @@
+NIRA & CO email verification setup
+
+Why verification did not arrive:
+- The local app only sends real email when SMTP variables are configured.
+- If SMTP is missing, the app saves the verification/reset email in the database email_outbox table.
+
+Local setup:
+1. Copy .env.example to .env inside this folder.
+2. Set these values:
+   BASE_URL=http://127.0.0.1:8088
+   SECRET_KEY=use-a-long-random-value-and-keep-it-private
+   COOKIE_SECURE=0
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USERNAME=your-gmail-address@gmail.com
+   SMTP_PASSWORD=your-google-app-password
+   FROM_EMAIL=your-gmail-address@gmail.com
+   SMTP_TLS=1
+
+Gmail note:
+- Use a Google App Password, not your normal Gmail password.
+- Your Google account usually needs 2-Step Verification enabled before App Passwords are available.
+
+After editing .env:
+1. Restart the app with start-nira.bat.
+2. Register a new account or click Resend verification email.
+3. Check your inbox and spam folder.
+
+Local outbox check:
+Run:
+  python show_outbox.py
+
+That prints the latest saved verification/reset emails from the local database.
