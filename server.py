@@ -357,7 +357,7 @@ def token_hash(token):
 
 
 def app_base_url(handler=None):
-    configured = os.environ.get("BASE_URL")
+    configured = os.environ.get("BASE_URL") or os.environ.get("APP_BASE_URL")
     if configured:
         return configured.rstrip("/")
     if handler:
@@ -381,7 +381,7 @@ def build_auth_email(title, message, link):
 
 def send_email(recipient, subject, text_body, html_body=None):
     host = os.environ.get("SMTP_HOST")
-    sender = os.environ.get("FROM_EMAIL")
+    sender = os.environ.get("FROM_EMAIL") or os.environ.get("EMAIL_FROM")
     if not host or not sender:
         return "outbox"
 
@@ -396,7 +396,8 @@ def send_email(recipient, subject, text_body, html_body=None):
     port = int(os.environ.get("SMTP_PORT", "587"))
     username = os.environ.get("SMTP_USERNAME")
     password = os.environ.get("SMTP_PASSWORD")
-    use_tls = os.environ.get("SMTP_TLS", "1") != "0"
+    use_tls_value = os.environ.get("SMTP_TLS", os.environ.get("SMTP_USE_TLS", "1")).lower()
+    use_tls = use_tls_value not in {"0", "false", "no", "off"}
 
     with smtplib.SMTP(host, port, timeout=15) as smtp:
         if use_tls:
